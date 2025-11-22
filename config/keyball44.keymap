@@ -35,17 +35,17 @@
         compatible = "zmk,combos";
         combo_esc {
             timeout-ms = <50>;
-            key-positions = <16 17>;
+            key-positions = <2 3>;
             bindings = <&gresc>;
         };
         combo_tab {
             timeout-ms = <50>;
-            key-positions = <32 33>;
+            key-positions = <14 15>;
             bindings = <&kp TAB>;
         };
         combo_quote {
             timeout-ms = <50>;
-            key-positions = <22 23>;
+            key-positions = <21 22>;
             bindings = <&kp SQT>;
         };
         combo_left_click {
@@ -57,6 +57,11 @@
             timeout-ms = <50>;
             key-positions = <21 22>;
             bindings = <&mkp RCLK>;
+        };
+        combo_shift_backspace {
+            timeout-ms = <50>;
+            key-positions = <41 42>;
+            bindings = <&hm LSHFT BSPC>;
         };
     };
 
@@ -79,22 +84,6 @@
             mods = <(MOD_LGUI|MOD_LSFT|MOD_RGUI|MOD_RSFT)>;
             keep-mods = <(MOD_LGUI|MOD_RGUI)>;
         };
-
-        cmqus: comma_question {
-            compatible = "zmk,behavior-mod-morph";
-            label = "COMMA_QUESTION";
-            #binding-cells = <0>;
-            bindings = <&kp COMMA>, <&kp QUESTION>;
-            mods = <(MOD_LSFT|MOD_RSFT)>;
-        };
-
-        dtsmi: dot_semi {
-            compatible = "zmk,behavior-mod-morph";
-            label = "DOT_SEMI";
-            #binding-cells = <0>;
-            bindings = <&kp DOT>, <&kp SEMI>;
-            mods = <(MOD_LSFT|MOD_RSFT)>;
-        };
     };
 
     keymap {
@@ -103,222 +92,144 @@
         default_layer {
             bindings = <
 // Row 0 Left - 6 keys
-&kp EQUAL      &kp N1     &kp N2     &kp N3     &kp N4     &kp N5
+&gresc          &kp Q      &kp W      &kp E      &kp R      &kp T
 // Row 0 Right - 6 keys
-&mo CONTROL    &kp N6     &kp N7     &kp N8     &kp N9     &kp N0
+&kp Y           &lt SNIPE U &lt SCROLL I &kp O      &kp P      &kp BSLH
 // Row 1 Left - 6 keys
-&kp TAB        &kp Q      &kp W      &kp E      &kp R      &kp T
+&kp CAPS        &kp A      &kp S      &kp D      &kp F      &kp G
 // Row 1 Right - 6 keys
-&kp LA(LSHFT)  &kp Y      &lt SNIPE U &lt SCROLL I &kp O      &kp P
+&kp H           &kp J      &kp K      &kp L      &kp SEMI   &kp SQT
 // Row 2 Left - 6 keys
-&kp ESC        &kp A      &kp S      &kp D      &kp F      &kp G
+&kp LEFT_SHIFT  &lt CONTROL Z &hm LCTRL X &hm LALT C &hm LGUI V &kp B
 // Row 2 Right - 6 keys
-&kp LGUI       &kp RCTRL  &kp LC(LA(LSHFT)) &kp H &kp J &kp K
-// Row 3 Left - 6 keys
-&kp LEFT_SHIFT &lt CONTROL Z &hm LCTRL X &hm LALT C &hm LGUI V &kp B
-// Row 3 Right - 6 keys
-&kp HOME       &kp N      &hm LGUI M &hm LALT COMMA &hm LCTRL DOT &kp FSLH
-// Thumb row - 8 keys
-&mo CONTROL    &kp GRAVE  &kp CAPS   &kp LEFT   &kp RIGHT   &hm LSHFT DEL &hm LGUI RET &mo NUMBERS
-&mo SYMBOL     &lt NAV SPACE &hm LSHFT BSPC &kp UP &kp DOWN &kp LBKT &kp RBKT &mo CONTROL
+&kp N           &kp M      &kp COMMA  &kp DOT    &kp SLASH  &kp RIGHT_SHIFT
+// Row 3 - Thumb row (5 left + 3 right = 8 keys)
+// Left thumb keys (5 keys): ignore first 2, then last 3
+&none           &none      &hm LSHFT DEL &hm LGUI RET &mo NUMBERS
+// Right thumb keys (3 keys)
+&mo SYMBOL      &lt NAV SPACE &hm LSHFT BSPC
             >;
         };
 
         windows {
             bindings = <
 // Row 0 Left - 6 keys
-&trans         &trans     &trans     &trans     &trans     &trans
+&trans          &trans     &trans     &trans     &trans     &trans
 // Row 0 Right - 6 keys
-&trans         &trans     &trans     &trans     &trans     &trans
+&trans          &trans     &trans     &trans     &trans     &trans
 // Row 1 Left - 6 keys
-&trans         &trans     &trans     &trans     &trans     &trans
+&trans          &trans     &trans     &trans     &trans     &trans
 // Row 1 Right - 6 keys
-&trans         &trans     &trans     &trans     &trans     &trans
+&trans          &trans     &trans     &trans     &trans     &trans
 // Row 2 Left - 6 keys
-&trans         &trans     &trans     &trans     &trans     &trans
+&trans          &trans     &trans     &trans     &trans     &trans
 // Row 2 Right - 6 keys
-&trans         &trans     &trans     &trans     &trans     &trans
-// Row 3 Left - 6 keys
-&trans         &trans     &trans     &trans     &trans     &trans
-// Row 3 Right - 6 keys
-&trans         &trans     &trans     &trans     &trans     &trans
-// Row 4 Left - 5 keys
-&trans         &trans     &trans     &trans     &trans
-// Row 4 Right - 3 keys
-&trans         &trans     &trans
-// Thumb row
-&trans         &trans     &trans     &trans     &trans
-&hm LCTRL RET  &trans     &trans     &trans
+&trans          &trans     &trans     &trans     &trans     &trans
+// Row 3 - Thumb row
+&trans          &trans     &trans     &hm LCTRL RET &trans
+&trans          &trans     &trans
             >;
         };
 
         nav {
             bindings = <
 // Row 0 Left - 6 keys
-&none          &none      &none      &none      &none      &kp C_MUTE
+&none           &none      &none      &none      &none      &kp C_VOL_UP
 // Row 0 Right - 6 keys
-&kp K_MUTE     &none      &none      &none      &none      &none
+&none           &none      &none      &none      &none      &none
 // Row 1 Left - 6 keys
-&none          &none      &none      &none      &none      &none
+&none           &none      &none      &none      &none      &kp C_VOL_DN
 // Row 1 Right - 6 keys
-&kp C_VOL_UP   &none      &none      &none      &none      &none
+&kp LEFT        &kp DOWN   &kp UP     &kp RIGHT  &none      &none
 // Row 2 Left - 6 keys
-&none          &none      &none      &none      &none      &none
+&none           &none      &none      &none      &none      &kp C_MUTE
 // Row 2 Right - 6 keys
-&kp C_VOL_DN   &none      &none      &none      &none      &none
-// Row 3 Left - 6 keys
-&kp C_SLEEP    &none      &none      &none      &none      &none
-// Row 3 Right - 6 keys
-&none          &kp LG(LBRC) &kp LA(LS(DOWN)) &kp LA(LS(UP)) &kp LG(RBRC) &none
-// Row 4 Left - 5 keys
-&none          &none      &none      &none      &none
-// Row 4 Right - 3 keys
-&kp LC(UP)     &kp LC(LEFT) &kp LC(RIGHT)
-// Thumb row
-&none          &none      &none      &kp LEFT   &kp DOWN
-&kp UP         &kp RIGHT  &none      &none
+&kp LG(LBRC)    &kp LA(LS(DOWN)) &kp LA(LS(UP)) &kp LG(RBRC) &none &none
+// Row 3 - Thumb row
+&none           &none      &none      &none      &none
+&none           &none      &none
             >;
         };
 
         numbers {
             bindings = <
 // Row 0 Left - 6 keys
-&kp F1         &kp F2     &kp F3     &kp F4     &kp F5     &kp F6
+&kp F1          &kp F2     &kp F3     &kp F4     &kp F5     &kp F6
 // Row 0 Right - 6 keys
-&kp F7         &kp F8     &kp F9     &kp F10    &kp F11    &kp F12
+&kp F7          &kp F8     &kp F9     &kp F10    &kp F11    &kp F12
 // Row 1 Left - 6 keys
-&none          &none      &none      &none      &none      &none
+&none           &kp N1     &kp N2     &kp N3     &kp N4     &kp N5
 // Row 1 Right - 6 keys
-&none          &none      &none      &none      &none      &none
+&kp N6          &kp N7     &kp N8     &kp N9     &kp N0     &none
 // Row 2 Left - 6 keys
-&kp EQUAL      &kp N1     &kp N2     &kp N3     &kp N4     &kp N5
+&none           &none      &none      &none      &none      &none
 // Row 2 Right - 6 keys
-&kp N6         &kp N7     &kp N8     &kp N9     &kp N0     &kp MINUS
-// Row 3 Left - 6 keys
-&none          &none      &none      &none      &none      &none
-// Row 3 Right - 6 keys
-&none          &none      &none      &none      &none      &none
-// Row 4 Left - 5 keys
-&trans         &trans     &trans     &trans     &trans
-// Row 4 Right - 3 keys
-&trans         &trans     &trans
-// Thumb row
-&trans         &trans     &trans     &trans     &trans
-&trans         &trans     &trans     &trans
+&none           &none      &none      &none      &none      &none
+// Row 3 - Thumb row
+&trans          &trans     &trans     &trans     &trans
+&trans          &trans     &trans
             >;
         };
 
         symbol {
             bindings = <
 // Row 0 Left - 6 keys
-&none          &none      &none      &none      &none      &none
+&none           &none      &none      &none      &none      &none
 // Row 0 Right - 6 keys
-&none          &none      &none      &none      &none      &none
+&kp GRAVE       &kp EQUAL  &kp LBRC   &kp RBRC   &kp PIPE   &kp BSLH
 // Row 1 Left - 6 keys
-&none          &none      &none      &none      &none      &none
+&none           &none      &none      &none      &none      &none
 // Row 1 Right - 6 keys
-&none          &kp GRAVE  &kp EQUAL  &kp LBRC   &kp RBRC   &kp PIPE
+&kp LBKT        &kp RBKT   &kp LPAR   &kp RPAR   &kp MINUS  &none
 // Row 2 Left - 6 keys
-&none          &none      &none      &none      &none      &none
+&none           &none      &none      &none      &none      &none
 // Row 2 Right - 6 keys
-&none          &kp LBKT   &kp RBKT   &kp LPAR   &kp RPAR   &kp MINUS
-// Row 3 Left - 6 keys
-&none          &none      &none      &none      &none      &none
-// Row 3 Right - 6 keys
-&none          &kp PLUS   &kp EQUAL  &kp LT     &kp GT     &kp FSLH
-// Row 4 Left - 5 keys
-&none          &none      &none      &none      &none
-// Row 4 Right - 3 keys
-&none          &none      &none
-// Thumb row
-&trans         &trans     &trans     &trans     &trans
-&trans         &trans     &trans     &trans
+&none           &kp PLUS   &kp EQUAL  &kp LT     &kp GT     &kp FSLH
+// Row 3 - Thumb row
+&trans          &trans     &trans     &trans     &trans
+&trans          &trans     &trans
             >;
         };
 
         CONTROL {
             bindings = <
 // Row 0 Left - 6 keys
-&none          &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4
+&bootloader     &none      &none      &none      &none      &none
 // Row 0 Right - 6 keys
-&bt BT_SEL 0   &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4 &none
+&none           &none      &none      &none      &none      &bootloader
 // Row 1 Left - 6 keys
-&none          &none      &tog WINDOWS &none      &none      &bootloader
+&none           &none      &tog WINDOWS &none      &none      &none
 // Row 1 Right - 6 keys
-&bootloader    &none      &none      &none      &none      &none
+&none           &none      &none      &none      &none      &none
 // Row 2 Left - 6 keys
-&none          &none      &none      &none      &none      &none
+&bt BT_CLR      &none      &none      &none      &none      &none
 // Row 2 Right - 6 keys
-&bt BT_CLR     &none      &none      &none      &none      &none
-// Row 3 Left - 6 keys
-&none          &none      &none      &none      &none      &none
-// Row 3 Right - 6 keys
-&none          &none      &none      &none      &none      &none
-// Row 4 Left - 5 keys
-&bootloader    &none      &none      &bl BL_INC &bl BL_DEC
-// Row 4 Right - 3 keys
-&none          &none      &bootloader
-// Thumb row
-&none          &none      &none      &none      &none
-&none          &none      &none      &none
+&bt BT_SEL 1    &bt BT_SEL 2 &bt BT_SEL 3 &none &none &none
+// Row 3 - Thumb row
+&bootloader     &none      &none      &none      &none
+&none           &none      &none
             >;
         };
 
         scroll_layer {
             label = "SCROLL";
             bindings = <
-// Row 0 Left - 6 keys
-&trans         &trans     &trans     &trans     &trans     &trans
-// Row 0 Right - 6 keys
-&trans         &trans     &trans     &trans     &trans     &trans
-// Row 1 Left - 6 keys
-&trans         &trans     &trans     &trans     &trans     &trans
-// Row 1 Right - 6 keys
-&trans         &trans     &trans     &trans     &trans     &trans
-// Row 2 Left - 6 keys
-&trans         &trans     &trans     &trans     &trans     &trans
-// Row 2 Right - 6 keys
-&trans         &trans     &trans     &trans     &trans     &trans
-// Row 3 Left - 6 keys
-&trans         &trans     &trans     &trans     &trans     &trans
-// Row 3 Right - 6 keys
-&trans         &trans     &trans     &trans     &trans     &trans
-// Row 4 Left - 5 keys
-&trans         &trans     &trans     &trans     &trans
-// Row 4 Right - 3 keys
-&trans         &trans     &trans
-// Thumb row
-&trans         &trans     &trans     &trans     &trans
-&trans         &trans     &trans     &trans
+&trans          &trans     &trans     &trans     &trans     &trans
+&trans          &trans     &trans     &trans     &trans     &trans
+&trans          &trans     &trans     &trans     &trans     &trans
+&trans          &trans     &trans     &trans     &trans
+&trans          &trans     &trans
             >;
         };
 
         snipe_layer {
             label = "SNIPE";
             bindings = <
-// Row 0 Left - 6 keys
-&trans         &trans     &trans     &trans     &trans     &trans
-// Row 0 Right - 6 keys
-&trans         &trans     &trans     &trans     &trans     &trans
-// Row 1 Left - 6 keys
-&trans         &trans     &trans     &trans     &trans     &trans
-// Row 1 Right - 6 keys
-&trans         &trans     &trans     &trans     &trans     &trans
-// Row 2 Left - 6 keys
-&trans         &trans     &trans     &trans     &trans     &trans
-// Row 2 Right - 6 keys
-&trans         &trans     &trans     &trans     &trans     &trans
-// Row 3 Left - 6 keys
-&trans         &trans     &trans     &trans     &trans     &trans
-// Row 3 Right - 6 keys
-&trans         &trans     &trans     &trans     &trans     &trans
-// Row 4 Left - 5 keys
-&trans         &trans     &trans     &trans     &trans
-// Row 4 Right - 3 keys
-&trans         &trans     &trans
-// Thumb row
-&trans         &trans     &trans     &trans     &trans
-&trans         &trans     &trans     &trans
+&trans          &trans     &trans     &trans     &trans     &trans
+&trans          &trans     &trans     &trans     &trans     &trans
+&trans          &trans     &trans     &trans     &trans     &trans
+&trans          &trans     &trans     &trans     &trans
+&trans          &trans     &trans
             >;
         };
     };
