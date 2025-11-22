@@ -122,7 +122,7 @@
 // Row 2 Left - 6 keys
 &kp LEFT_SHIFT  &lt CONTROL Z &hm LCTRL X &hm LALT C &hm LGUI V &kp B
 // Row 2 Right - 6 keys
-&kp N           &kp M      &kp COMMA  &kp DOT    &kp SLASH  &kp RIGHT_SHIFT
+&kp N           &hm LGUI M &hm LALT COMMA &hm LCTRL DOT &kp SLASH  &kp RIGHT_SHIFT
 // Row 3 - Thumb row (5 left + 3 right = 8 keys)
 // Left thumb keys (5 keys): ignore first 2, then last 3
 &none           &none      &hm LSHFT DEL &hm LGUI RET &mo NUMBERS
@@ -234,9 +234,19 @@
         scroll_layer {
             label = "SCROLL";
             bindings = <
+// Row 0 Left - 6 keys
 &trans          &trans     &trans     &trans     &trans     &trans
+// Row 0 Right - 6 keys
 &trans          &trans     &trans     &trans     &trans     &trans
+// Row 1 Left - 6 keys
 &trans          &trans     &trans     &trans     &trans     &trans
+// Row 1 Right - 6 keys
+&trans          &trans     &trans     &trans     &trans     &trans
+// Row 2 Left - 6 keys
+&trans          &trans     &trans     &trans     &trans     &trans
+// Row 2 Right - 6 keys
+&trans          &trans     &trans     &trans     &trans     &trans
+// Row 3 - Thumb row
 &trans          &trans     &trans     &trans     &trans
 &trans          &trans     &trans
             >;
@@ -245,9 +255,19 @@
         snipe_layer {
             label = "SNIPE";
             bindings = <
+// Row 0 Left - 6 keys
 &trans          &trans     &trans     &trans     &trans     &trans
+// Row 0 Right - 6 keys
 &trans          &trans     &trans     &trans     &trans     &trans
+// Row 1 Left - 6 keys
 &trans          &trans     &trans     &trans     &trans     &trans
+// Row 1 Right - 6 keys
+&trans          &trans     &trans     &trans     &trans     &trans
+// Row 2 Left - 6 keys
+&trans          &trans     &trans     &trans     &trans     &trans
+// Row 2 Right - 6 keys
+&trans          &trans     &trans     &trans     &trans     &trans
+// Row 3 - Thumb row
 &trans          &trans     &trans     &trans     &trans
 &trans          &trans     &trans
             >;
