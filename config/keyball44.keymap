@@ -86,6 +86,16 @@
             bindings = <&kp>, <&kp>;
         };
         
+        bkspc_shft: backspace_shift {
+            compatible = "zmk,behavior-hold-tap";
+            label = "BACKSPACE_SHIFT";
+            #binding-cells = <2>;
+            tapping-term-ms = <200>;
+            quick_tap_ms = <175>;
+            flavor = "tap-preferred";
+            bindings = <&kp>, <&kp>;
+        };
+        
         gresc: grave_escape {
             compatible = "zmk,behavior-mod-morph";
             label = "GRAVE_ESCAPE";
@@ -117,7 +127,7 @@
 // Left thumb keys (5 keys): ignore first 2, then last 3
 &none           &none      &hm LSHFT DEL &hm LGUI RET &mo NUMBERS
 // Right thumb keys (3 keys)
-&lt NAV SPACE    &hm LSHFT BSPC &none
+&lt NAV SPACE    &bkspc_shft LSHFT BSPC &none
             >;
         };
 
