@@ -50,12 +50,12 @@
         };
         combo_left_click {
             timeout-ms = <50>;
-            key-positions = <20 21>;
+            key-positions = <19 20>;
             bindings = <&mkp LCLK>;
         };
         combo_right_click {
             timeout-ms = <50>;
-            key-positions = <21 22>;
+            key-positions = <20 21>;
             bindings = <&mkp RCLK>;
         };
         combo_symbol {
