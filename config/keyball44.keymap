@@ -58,10 +58,10 @@
             key-positions = <21 22>;
             bindings = <&mkp RCLK>;
         };
-        combo_shift_backspace {
+        combo_symbol {
             timeout-ms = <50>;
             key-positions = <41 42>;
-            bindings = <&hm LSHFT BSPC>;
+            bindings = <&mo SYMBOL>;
         };
         combo_minus {
             timeout-ms = <50>;
@@ -117,7 +117,7 @@
 // Left thumb keys (5 keys): ignore first 2, then last 3
 &none           &none      &hm LSHFT DEL &hm LGUI RET &mo NUMBERS
 // Right thumb keys (3 keys)
-&mo SYMBOL      &lt NAV SPACE &hm LSHFT BSPC
+&lt NAV SPACE    &hm LSHFT BSPC &none
             >;
         };
 
