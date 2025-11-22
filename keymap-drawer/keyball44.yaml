@@ -227,8 +227,8 @@ layers:
   - {t: '$$mdi:transfer$$', type: trans}
   CONTROL:
   - $$mdi:progress-download$$
-  - {t: WINDOWS, h: toggle}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: WINDOWS, h: toggle}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
