@@ -277,8 +277,8 @@ rect.held, rect.combo.held {
   visibility: hidden;
 }
 </style>
-<g transform="translate(40, 0)" class="layer-default">
-<text x="0" y="28" class="label" id="default">default:</text>
+<g transform="translate(40, 0)" class="layer-DEFAULT">
+<text x="0" y="28" class="label" id="DEFAULT">DEFAULT:</text>
 <g transform="translate(0, 56)">
 <g transform="translate(28, 56)" class="key keypos-0">
 <rect rx="6" ry="6" x="-26" y="-26" width="52" height="52" class="key side"/>
@@ -504,15 +504,15 @@ rect.held, rect.combo.held {
 <g transform="translate(382, 273) rotate(25.0)" class="key keypos-40">
 <rect rx="6" ry="6" x="-26" y="-26" width="52" height="52" class="key side"/>
 <rect rx="4" ry="4" x="-20" y="-24" width="40" height="40" class="key"/>
-<a href="#numbers">
-<text x="0" y="-4" class="key tap layer-activator"><tspan style="font-size: 86%">numbers</tspan></text>
+<a href="#NUMBERS">
+<text x="0" y="-4" class="key tap layer-activator"><tspan style="font-size: 86%">NUMBERS</tspan></text>
 </a></g>
 <g transform="translate(500, 277) rotate(-25.0)" class="key keypos-41">
 <rect rx="6" ry="6" x="-26" y="-26" width="52" height="52" class="key side"/>
 <rect rx="4" ry="4" x="-20" y="-24" width="40" height="40" class="key"/>
 <use href="#mdi:keyboard-space" xlink:href="#mdi:keyboard-space" x="-9" y="-13" height="18" width="18.0" class="key tap glyph mdi:keyboard-space"/>
-<a href="#nav">
-<text x="0" y="24" class="key hold layer-activator">nav</text>
+<a href="#NAV">
+<text x="0" y="24" class="key hold layer-activator">NAV</text>
 </a></g>
 <g transform="translate(557, 254) rotate(-10.0)" class="key keypos-42">
 <rect rx="6" ry="6" x="-26" y="-26" width="52" height="52" class="key side"/>
@@ -549,8 +549,8 @@ rect.held, rect.combo.held {
 </g>
 <g class="combo combopos-5">
 <rect rx="6" ry="6" x="514" y="253" width="28" height="26" class="combo"/>
-<a href="#symbol">
-<text x="528" y="266" class="combo tap layer-activator">symbol</text>
+<a href="#SYMBOL">
+<text x="528" y="266" class="combo tap layer-activator">SYMBOL</text>
 </a></g>
 <g class="combo combopos-6">
 <rect rx="6" ry="6" x="714" y="36" width="28" height="26" class="combo"/>
@@ -563,8 +563,8 @@ rect.held, rect.combo.held {
 </g>
 </g>
 </g>
-<g transform="translate(40, 370)" class="layer-windows">
-<text x="0" y="28" class="label" id="windows">windows:</text>
+<g transform="translate(40, 370)" class="layer-WINDOWS">
+<text x="0" y="28" class="label" id="WINDOWS">WINDOWS:</text>
 <g transform="translate(0, 56)">
 <g transform="translate(28, 56)" class="key trans keypos-0">
 <rect rx="6" ry="6" x="-26" y="-26" width="52" height="52" class="key trans side"/>
@@ -811,8 +811,8 @@ rect.held, rect.combo.held {
 </g>
 <g class="combo combopos-5">
 <rect rx="6" ry="6" x="514" y="253" width="28" height="26" class="combo"/>
-<a href="#symbol">
-<text x="528" y="266" class="combo tap layer-activator">symbol</text>
+<a href="#SYMBOL">
+<text x="528" y="266" class="combo tap layer-activator">SYMBOL</text>
 </a></g>
 <g class="combo combopos-6">
 <rect rx="6" ry="6" x="714" y="36" width="28" height="26" class="combo"/>
@@ -825,8 +825,8 @@ rect.held, rect.combo.held {
 </g>
 </g>
 </g>
-<g transform="translate(40, 740)" class="layer-nav">
-<text x="0" y="28" class="label" id="nav">nav:</text>
+<g transform="translate(40, 740)" class="layer-NAV">
+<text x="0" y="28" class="label" id="NAV">NAV:</text>
 <g transform="translate(0, 56)">
 <g transform="translate(28, 56)" class="key none keypos-0">
 <rect rx="6" ry="6" x="-26" y="-26" width="52" height="52" class="key none side"/>
@@ -1072,8 +1072,8 @@ rect.held, rect.combo.held {
 </g>
 <g class="combo combopos-5">
 <rect rx="6" ry="6" x="514" y="253" width="28" height="26" class="combo"/>
-<a href="#symbol">
-<text x="528" y="266" class="combo tap layer-activator">symbol</text>
+<a href="#SYMBOL">
+<text x="528" y="266" class="combo tap layer-activator">SYMBOL</text>
 </a></g>
 <g class="combo combopos-6">
 <rect rx="6" ry="6" x="714" y="36" width="28" height="26" class="combo"/>
@@ -1086,8 +1086,8 @@ rect.held, rect.combo.held {
 </g>
 </g>
 </g>
-<g transform="translate(40, 1110)" class="layer-numbers">
-<text x="0" y="28" class="label" id="numbers">numbers:</text>
+<g transform="translate(40, 1110)" class="layer-NUMBERS">
+<text x="0" y="28" class="label" id="NUMBERS">NUMBERS:</text>
 <g transform="translate(0, 56)">
 <g transform="translate(28, 56)" class="key keypos-0">
 <rect rx="6" ry="6" x="-26" y="-26" width="52" height="52" class="key side"/>
@@ -1342,8 +1342,8 @@ rect.held, rect.combo.held {
 </g>
 <g class="combo combopos-5">
 <rect rx="6" ry="6" x="514" y="253" width="28" height="26" class="combo"/>
-<a href="#symbol">
-<text x="528" y="266" class="combo tap layer-activator">symbol</text>
+<a href="#SYMBOL">
+<text x="528" y="266" class="combo tap layer-activator">SYMBOL</text>
 </a></g>
 <g class="combo combopos-6">
 <rect rx="6" ry="6" x="714" y="36" width="28" height="26" class="combo"/>
@@ -1356,8 +1356,8 @@ rect.held, rect.combo.held {
 </g>
 </g>
 </g>
-<g transform="translate(40, 1480)" class="layer-symbol">
-<text x="0" y="28" class="label" id="symbol">symbol:</text>
+<g transform="translate(40, 1480)" class="layer-SYMBOL">
+<text x="0" y="28" class="label" id="SYMBOL">SYMBOL:</text>
 <g transform="translate(0, 56)">
 <g transform="translate(28, 56)" class="key none keypos-0">
 <rect rx="6" ry="6" x="-26" y="-26" width="52" height="52" class="key none side"/>
@@ -1609,8 +1609,8 @@ rect.held, rect.combo.held {
 </g>
 <g class="combo combopos-5">
 <rect rx="6" ry="6" x="514" y="253" width="28" height="26" class="combo"/>
-<a href="#symbol">
-<text x="528" y="266" class="combo tap layer-activator">symbol</text>
+<a href="#SYMBOL">
+<text x="528" y="266" class="combo tap layer-activator">SYMBOL</text>
 </a></g>
 <g class="combo combopos-6">
 <rect rx="6" ry="6" x="714" y="36" width="28" height="26" class="combo"/>
@@ -1634,8 +1634,8 @@ rect.held, rect.combo.held {
 <g transform="translate(84, 56)" class="key keypos-1">
 <rect rx="6" ry="6" x="-26" y="-26" width="52" height="52" class="key side"/>
 <rect rx="4" ry="4" x="-20" y="-24" width="40" height="40" class="key"/>
-<a href="#windows">
-<text x="0" y="-4" class="key tap layer-activator"><tspan style="font-size: 86%">windows</tspan></text>
+<a href="#WINDOWS">
+<text x="0" y="-4" class="key tap layer-activator"><tspan style="font-size: 86%">WINDOWS</tspan></text>
 </a><text x="0" y="24" class="key hold">toggle</text>
 </g>
 <g transform="translate(140, 42)" class="key none keypos-2">
@@ -1875,8 +1875,8 @@ rect.held, rect.combo.held {
 </g>
 <g class="combo combopos-5">
 <rect rx="6" ry="6" x="514" y="253" width="28" height="26" class="combo"/>
-<a href="#symbol">
-<text x="528" y="266" class="combo tap layer-activator">symbol</text>
+<a href="#SYMBOL">
+<text x="528" y="266" class="combo tap layer-activator">SYMBOL</text>
 </a></g>
 <g class="combo combopos-6">
 <rect rx="6" ry="6" x="714" y="36" width="28" height="26" class="combo"/>
@@ -2135,8 +2135,8 @@ rect.held, rect.combo.held {
 </g>
 <g class="combo combopos-5">
 <rect rx="6" ry="6" x="514" y="253" width="28" height="26" class="combo"/>
-<a href="#symbol">
-<text x="528" y="266" class="combo tap layer-activator">symbol</text>
+<a href="#SYMBOL">
+<text x="528" y="266" class="combo tap layer-activator">SYMBOL</text>
 </a></g>
 <g class="combo combopos-6">
 <rect rx="6" ry="6" x="714" y="36" width="28" height="26" class="combo"/>
@@ -2395,8 +2395,8 @@ rect.held, rect.combo.held {
 </g>
 <g class="combo combopos-5">
 <rect rx="6" ry="6" x="514" y="253" width="28" height="26" class="combo"/>
-<a href="#symbol">
-<text x="528" y="266" class="combo tap layer-activator">symbol</text>
+<a href="#SYMBOL">
+<text x="528" y="266" class="combo tap layer-activator">SYMBOL</text>
 </a></g>
 <g class="combo combopos-6">
 <rect rx="6" ry="6" x="714" y="36" width="28" height="26" class="combo"/>

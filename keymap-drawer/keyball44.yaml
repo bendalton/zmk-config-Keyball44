@@ -1,6 +1,6 @@
 layout: {zmk_keyboard: keyball44}
 layers:
-  default:
+  DEFAULT:
   - {t: '$$mdi:keyboard-esc$$', s: '`'}
   - Q
   - W
@@ -41,11 +41,11 @@ layers:
   - {t: '$$mdi:minus-circle-outline$$', type: none}
   - {t: '$$mdi:backspace-reverse-outline$$', h: '$$mdi:apple-keyboard-shift$$'}
   - {t: '$$mdi:keyboard-return$$', h: LGUI}
-  - numbers
-  - {t: '$$mdi:keyboard-space$$', h: nav}
+  - NUMBERS
+  - {t: '$$mdi:keyboard-space$$', h: NAV}
   - {t: '$$mdi:backspace$$', h: '$$mdi:apple-keyboard-shift$$'}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
-  windows:
+  WINDOWS:
   - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
@@ -90,7 +90,7 @@ layers:
   - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
-  nav:
+  NAV:
   - {t: '$$mdi:minus-circle-outline$$', type: none}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
@@ -135,7 +135,7 @@ layers:
   - {t: '$$mdi:minus-circle-outline$$', type: held}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
-  numbers:
+  NUMBERS:
   - F1
   - F2
   - F3
@@ -180,7 +180,7 @@ layers:
   - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
-  symbol:
+  SYMBOL:
   - {t: '$$mdi:minus-circle-outline$$', type: none}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
@@ -227,7 +227,7 @@ layers:
   - {t: '$$mdi:transfer$$', type: trans}
   CONTROL:
   - $$mdi:progress-download$$
-  - {t: windows, h: toggle}
+  - {t: WINDOWS, h: toggle}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
@@ -372,7 +372,7 @@ combos:
 - p: [20, 21]
   k: $$mdi:mouse-right-click-outline$$
 - p: [41, 42]
-  k: symbol
+  k: SYMBOL
 - p: [9, 10]
   k: {h: '-', s: _}
 - p: [28, 29]
