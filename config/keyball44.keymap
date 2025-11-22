@@ -212,6 +212,7 @@
         };
 
         CONTROL {
+            label = "CONTROL";
             bindings = <
 // Row 0 Left - 6 keys
 &bootloader     &none      &none      &none      &none      &none
