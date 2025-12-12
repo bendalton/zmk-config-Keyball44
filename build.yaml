@@ -9,14 +9,14 @@
 # include:
 #   - board: bdn9_rev2
 #   - board: nice_nano_v2
-#     shield: reviung41
+#     shield: reviung41  nice_view_adapter nice_view
 #
 ---
 include:
   - board: nice_nano_v2
-    shield: keyball44_left nice_view_adapter nice_view
+    shield: keyball44_left
   - board: nice_nano_v2
-    shield: keyball44_right nice_view_adapter nice_view
+    shield: keyball44_right
     snippet: studio-rpc-usb-uart
   - board: nice_nano_v2
     shield: settings_reset
