@@ -1,6 +1,6 @@
 layout: {zmk_keyboard: keyball44}
 layers:
-  DEFAULT:
+  Base:
   - {t: '$$mdi:keyboard-esc$$', s: '`'}
   - Q
   - W
@@ -8,8 +8,8 @@ layers:
   - R
   - T
   - Y
-  - {t: U, h: SNIPE}
-  - {t: I, h: SCROLL}
+  - {t: U, h: Snipe}
+  - {t: I, h: Scroll}
   - O
   - P
   - {t: \, s: '|'}
@@ -26,7 +26,7 @@ layers:
   - {t: ;, s: ':'}
   - {t: '''', s: '"'}
   - $$mdi:apple-keyboard-shift$$
-  - {t: Z, h: CONTROL}
+  - {t: Z, h: Ctrl}
   - {t: X, h: '$$mdi:apple-keyboard-control$$'}
   - {t: C, h: '$$mdi:apple-keyboard-option$$'}
   - {t: V, h: LGUI}
@@ -38,14 +38,14 @@ layers:
   - {t: /, s: '?'}
   - $$mdi:apple-keyboard-shift$$
   - {t: '$$mdi:minus-circle-outline$$', type: none}
-  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - $$mdi:alpha-w-box$$
   - {t: '$$mdi:backspace-reverse-outline$$', h: '$$mdi:apple-keyboard-shift$$'}
   - {t: '$$mdi:keyboard-return$$', h: LGUI}
-  - NUMBERS
-  - {t: '$$mdi:keyboard-space$$', h: NAV}
+  - Num
+  - {t: '$$mdi:keyboard-space$$', h: Nav}
   - {t: '$$mdi:backspace$$', h: '$$mdi:apple-keyboard-shift$$'}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
-  WINDOWS:
+  Win:
   - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
@@ -72,14 +72,14 @@ layers:
   - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
+  - {t: X, h: LGUI}
+  - {t: '$$mdi:transfer$$', type: trans}
+  - {t: V, h: '$$mdi:apple-keyboard-control$$'}
   - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
+  - {t: M, h: '$$mdi:apple-keyboard-control$$'}
   - {t: '$$mdi:transfer$$', type: trans}
-  - {t: '$$mdi:transfer$$', type: trans}
-  - {t: '$$mdi:transfer$$', type: trans}
-  - {t: '$$mdi:transfer$$', type: trans}
-  - {t: '$$mdi:transfer$$', type: trans}
-  - {t: '$$mdi:transfer$$', type: trans}
+  - {t: ., h: LGUI, s: '>'}
   - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
@@ -90,7 +90,7 @@ layers:
   - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
-  NAV:
+  Nav:
   - {t: '$$mdi:minus-circle-outline$$', type: none}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
@@ -135,7 +135,7 @@ layers:
   - {t: '$$mdi:minus-circle-outline$$', type: held}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
-  NUMBERS:
+  Num:
   - F1
   - F2
   - F3
@@ -180,7 +180,7 @@ layers:
   - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
-  SYMBOL:
+  Sym:
   - {t: '$$mdi:minus-circle-outline$$', type: none}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
@@ -225,10 +225,10 @@ layers:
   - {type: held}
   - {type: held}
   - {t: '$$mdi:transfer$$', type: trans}
-  CONTROL:
+  Ctrl:
   - $$mdi:progress-download$$
   - {t: '$$mdi:minus-circle-outline$$', type: none}
-  - {t: WINDOWS, h: toggle}
+  - {t: Win, h: toggle}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
@@ -270,7 +270,7 @@ layers:
   - {t: '$$mdi:minus-circle-outline$$', type: none}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
-  SCROLL:
+  Scroll:
   - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
@@ -315,7 +315,7 @@ layers:
   - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
-  SNIPE:
+  Snipe:
   - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
@@ -372,7 +372,7 @@ combos:
 - p: [20, 21]
   k: $$mdi:mouse-right-click-outline$$
 - p: [41, 42]
-  k: SYMBOL
+  k: Sym
 - p: [9, 10]
   k: {h: '-', s: _}
 - p: [28, 29]
