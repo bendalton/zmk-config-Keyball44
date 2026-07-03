@@ -39,35 +39,32 @@
 / {
     combos {
         compatible = "zmk,combos";
-        // require-prior-idle-ms stops these letter/click combos from firing
-        // mid-word on fast rolls (e.g. "op" -> MINUS, "jk" -> LCLK).
+        // NOTE: no require-prior-idle-ms here on purpose -- it made combos you
+        // fire right after typing (e.g. ' = L+;) feel laggy. The 50ms two-key
+        // window is the only guard. If a specific combo misfires mid-word,
+        // add a SMALL require-prior-idle-ms (~40) to just that one.
         combo_esc {
             timeout-ms = <50>;
-            require-prior-idle-ms = <125>;
             key-positions = <2 3>;
             bindings = <&gresc>;
         };
         combo_tab {
             timeout-ms = <50>;
-            require-prior-idle-ms = <125>;
             key-positions = <14 15>;
             bindings = <&kp TAB>;
         };
         combo_quote {
             timeout-ms = <50>;
-            require-prior-idle-ms = <125>;
             key-positions = <21 22>;
             bindings = <&kp SQT>;
         };
         combo_left_click {
             timeout-ms = <50>;
-            require-prior-idle-ms = <125>;
             key-positions = <19 20>;
             bindings = <&mkp LCLK>;
         };
         combo_right_click {
             timeout-ms = <50>;
-            require-prior-idle-ms = <125>;
             key-positions = <20 21>;
             bindings = <&mkp RCLK>;
         };
@@ -78,13 +75,11 @@
         };
         combo_minus {
             timeout-ms = <50>;
-            require-prior-idle-ms = <125>;
             key-positions = <9 10>;
             bindings = <&kp MINUS>;
         };
         combo_question {
             timeout-ms = <50>;
-            require-prior-idle-ms = <125>;
             key-positions = <28 29>;
             bindings = <&kp QUESTION>;
         };
