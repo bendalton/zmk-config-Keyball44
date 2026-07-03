@@ -42,7 +42,10 @@
 
 &spi1 {
     status = "okay";
-    compatible = "nordic,nrf-spim";
+    /* Non-DMA SPI for the trackball too: its SPIM1 EasyDMA is the last DMA
+     * engine left that could clobber the display framebuffer in RAM. Small
+     * PMW3610 burst reads are fine without DMA. */
+    compatible = "nordic,nrf-spi";
     pinctrl-0 = <&spi1_default>;
     pinctrl-1 = <&spi1_sleep>;
     pinctrl-names = "default", "sleep";
