@@ -1,1 +1,2 @@
-source "Kconfig.zephyr"
+# Custom-display module Kconfig. No options of our own; must NOT source
+# Kconfig.zephyr (the app already does — re-sourcing here recurses and fails).
