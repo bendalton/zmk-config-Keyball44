@@ -17,7 +17,8 @@ include:
     shield: keyball44_left nice_view_adapter nice_view
   - board: nice_nano_v2
     shield: keyball44_right nice_view_adapter nice_view
-    # NOTE: studio-rpc-usb-uart snippet temporarily removed for the USB-logging
-    # diagnostic build (both want the USB CDC serial). Restore after debugging.
+    # TEMP DIAGNOSTIC: zmk-usb-logging snippet provides the USB CDC-ACM console
+    # node + logging. Restore `studio-rpc-usb-uart` after debugging.
+    snippet: zmk-usb-logging
   - board: nice_nano_v2
     shield: settings_reset
