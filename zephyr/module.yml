@@ -1,0 +1,4 @@
+name: keyball-dashboard
+build:
+  cmake: .
+  kconfig: Kconfig
