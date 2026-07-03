@@ -22,12 +22,16 @@
     tapping-term-ms = <240>;
     flavor = "balanced";
     quick-tap-ms = <150>;
+    // Don't treat U/I/SPACE/Z as a layer-hold if you were just typing.
+    // This is the main fix for dropped letters on fast rolls.
+    require-prior-idle-ms = <150>;
 };
 
 &mt {
     tapping-term-ms = <200>;
     flavor = "tap-preferred";
     quick-tap-ms = <150>;
+    require-prior-idle-ms = <125>;
 };
 
 &caps_word { continue-list = <UNDERSCORE MINUS>; };
@@ -35,28 +39,35 @@
 / {
     combos {
         compatible = "zmk,combos";
+        // require-prior-idle-ms stops these letter/click combos from firing
+        // mid-word on fast rolls (e.g. "op" -> MINUS, "jk" -> LCLK).
         combo_esc {
             timeout-ms = <50>;
+            require-prior-idle-ms = <125>;
             key-positions = <2 3>;
             bindings = <&gresc>;
         };
         combo_tab {
             timeout-ms = <50>;
+            require-prior-idle-ms = <125>;
             key-positions = <14 15>;
             bindings = <&kp TAB>;
         };
         combo_quote {
             timeout-ms = <50>;
+            require-prior-idle-ms = <125>;
             key-positions = <21 22>;
             bindings = <&kp SQT>;
         };
         combo_left_click {
             timeout-ms = <50>;
+            require-prior-idle-ms = <125>;
             key-positions = <19 20>;
             bindings = <&mkp LCLK>;
         };
         combo_right_click {
             timeout-ms = <50>;
+            require-prior-idle-ms = <125>;
             key-positions = <20 21>;
             bindings = <&mkp RCLK>;
         };
@@ -67,11 +78,13 @@
         };
         combo_minus {
             timeout-ms = <50>;
+            require-prior-idle-ms = <125>;
             key-positions = <9 10>;
             bindings = <&kp MINUS>;
         };
         combo_question {
             timeout-ms = <50>;
+            require-prior-idle-ms = <125>;
             key-positions = <28 29>;
             bindings = <&kp QUESTION>;
         };
@@ -84,16 +97,18 @@
             #binding-cells = <2>;
             tapping-term-ms = <250>;
             quick_tap_ms = <150>;
+            require-prior-idle-ms = <125>;
             flavor = "tap-preferred";
             bindings = <&kp>, <&kp>;
         };
-        
+
         bkspc_shft: backspace_shift {
             compatible = "zmk,behavior-hold-tap";
             label = "BACKSPACE_SHIFT";
             #binding-cells = <2>;
             tapping-term-ms = <200>;
             quick_tap_ms = <175>;
+            require-prior-idle-ms = <125>;
             flavor = "tap-preferred";
             bindings = <&kp>, <&kp>;
         };
@@ -113,6 +128,7 @@
 
         default_layer {
             label = "DEFAULT";
+            display-name = "Base";
             bindings = <
 // Row 0 Left - 6 keys
 &gresc          &kp Q      &kp W      &kp E      &kp R      &kp T
@@ -127,15 +143,19 @@
 // Row 2 Right - 6 keys
 &kp N           &hm LGUI M &hm LALT COMMA &hm LCTRL DOT &kp SLASH  &kp RIGHT_SHIFT
 // Row 3 - Thumb row (5 left + 3 right = 8 keys)
-// Left thumb keys (5 keys): ignore first 2, then last 3
-&none           &none      &hm LSHFT DEL &hm LGUI RET &mo NUMBERS
+// Left thumb keys (5 keys): first was dead -> now caps_word
+&none           &caps_word &hm LSHFT DEL &hm LGUI RET &mo NUMBERS
 // Right thumb keys (3 keys)
 &lt NAV SPACE    &bkspc_shft LSHFT BSPC &none
             >;
         };
 
+        // Toggle (via CONTROL layer) that swaps GUI<->CTRL so the same fingers
+        // that hit Cmd on macOS hit Ctrl on Windows/Linux. Everything else
+        // falls through (&trans) to the base layer.
         windows {
             label = "WINDOWS";
+            display-name = "Win";
             bindings = <
 // Row 0 Left - 6 keys
 &trans          &trans     &trans     &trans     &trans     &trans
@@ -145,11 +165,11 @@
 &trans          &trans     &trans     &trans     &trans     &trans
 // Row 1 Right - 6 keys
 &trans          &trans     &trans     &trans     &trans     &trans
-// Row 2 Left - 6 keys
-&trans          &trans     &trans     &trans     &trans     &trans
-// Row 2 Right - 6 keys
-&trans          &trans     &trans     &trans     &trans     &trans
-// Row 3 - Thumb row
+// Row 2 Left - 6 keys  (X: CTRL->GUI, V: GUI->CTRL)
+&trans          &trans     &hm LGUI X &trans     &hm LCTRL V &trans
+// Row 2 Right - 6 keys (M: GUI->CTRL, DOT: CTRL->GUI)
+&trans          &hm LCTRL M &trans    &hm LGUI DOT &trans    &trans
+// Row 3 - Thumb row (RET: GUI->CTRL)
 &trans          &trans     &trans     &hm LCTRL RET &trans
 &trans          &trans     &trans
             >;
@@ -157,6 +177,7 @@
 
         nav {
             label = "NAV";
+            display-name = "Nav";
             bindings = <
 // Row 0 Left - 6 keys
 &none           &none      &none      &none      &none      &kp C_VOL_UP
@@ -178,6 +199,7 @@
 
         numbers {
             label = "NUMBERS";
+            display-name = "Num";
             bindings = <
 // Row 0 Left - 6 keys
 &kp F1          &kp F2     &kp F3     &kp F4     &kp F5     &kp F6
@@ -199,6 +221,7 @@
 
         symbol {
             label = "SYMBOL";
+            display-name = "Sym";
             bindings = <
 // Row 0 Left - 6 keys
 &none           &none      &none      &none      &none      &none
@@ -220,6 +243,7 @@
 
         CONTROL {
             label = "CONTROL";
+            display-name = "Ctrl";
             bindings = <
 // Row 0 Left - 6 keys
 &bootloader     &none      &tog WINDOWS      &none      &none      &none
@@ -241,6 +265,7 @@
 
         scroll {
             label = "SCROLL";
+            display-name = "Scroll";
             bindings = <
 // Row 0 Left - 6 keys
 &trans          &trans     &trans     &trans     &trans     &trans
@@ -262,6 +287,7 @@
 
         snipe {
             label = "SNIPE";
+            display-name = "Snipe";
             bindings = <
 // Row 0 Left - 6 keys
 &trans          &trans     &trans     &trans     &trans     &trans
