@@ -25,6 +25,9 @@
  * can't collide -- exactly like the old I2C OLED never did.
  */
 &spi0 { status = "disabled"; };
+/* Also disable the stock hardware-SPI nice!view node (child of the now-off
+ * spi0) so the ls0xx driver doesn't try to bind it to a disabled bus. */
+&nice_view { status = "disabled"; };
 
 / {
     nice_view_bitbang: nice_view_bitbang {
