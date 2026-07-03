@@ -17,39 +17,16 @@
 #include <dt-bindings/zmk/backlight.h>
 
 /*
- * Drive the nice!view by BIT-BANGED SPI over plain GPIO (no EasyDMA), on the
- * same pins the nice_view_adapter used (SCK P0.20, MOSI P0.17, CS P0.06/D1).
- * The right half's trackball is on hardware SPIM1 w/ DMA; running the display
- * on hardware SPIM0 (also DMA) let the two DMA engines corrupt each other's
- * transfers -> the "renders then speckles" glitch. Bit-bang has no DMA, so it
- * can't collide -- exactly like the old I2C OLED never did.
+ * Run the nice!view on the nRF's NON-DMA SPI driver (nordic,nrf-spi) instead
+ * of the default SPIM (nordic,nrf-spim, which uses EasyDMA). The display's SPIM
+ * DMA transfers collided with the trackball's SPIM1 DMA -> silent nice!view
+ * frame corruption (confirmed by logs; the old I2C OLED never did this because
+ * I2C is a different engine). Non-DMA SPI clocks bytes out via the CPU (no
+ * EasyDMA) so it can't contend -- and unlike bit-bang it supports the LSB-first
+ * bit order the ls0xx requires. SPI0-2 on nRF52840 support non-DMA mode, and
+ * the SPIM_* pinctrl from the nice_view_adapter is shared by both drivers.
  */
-&spi0 { status = "disabled"; };
-/* Also disable the stock hardware-SPI nice!view node (child of the now-off
- * spi0) so the ls0xx driver doesn't try to bind it to a disabled bus. */
-&nice_view { status = "disabled"; };
-
-/ {
-    nice_view_bitbang: nice_view_bitbang {
-        compatible = "zephyr,spi-bitbang";
-        #address-cells = <1>;
-        #size-cells = <0>;
-        clk-gpios = <&gpio0 20 GPIO_ACTIVE_HIGH>;
-        mosi-gpios = <&gpio0 17 GPIO_ACTIVE_HIGH>;
-        miso-gpios = <&gpio0 25 GPIO_ACTIVE_HIGH>;
-        cs-gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
-
-        nice_view_bb: ls0xx@0 {
-            compatible = "sharp,ls0xx";
-            reg = <0>;
-            spi-max-frequency = <1000000>;
-            width = <160>;
-            height = <68>;
-        };
-    };
-
-    chosen { zephyr,display = &nice_view_bb; };
-};
+&spi0 { compatible = "nordic,nrf-spi"; };
 
 &lt {
     tapping-term-ms = <240>;
