@@ -150,7 +150,7 @@ static void redraw(void) {
     on_usb = (ep.transport == ZMK_TRANSPORT_USB);
 #endif
     if (on_usb) {
-        d_text(g_cv, "USB", &lv_font_montserrat_26, y + 52);
+        d_text(g_cv, "USB", &lv_font_montserrat_16, y + 64);
     } else {
         char pn[4];
         snprintf(pn, sizeof(pn), "%d", zmk_ble_active_profile_index() + 1);
