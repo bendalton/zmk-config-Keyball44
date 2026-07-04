@@ -15,11 +15,11 @@
 
 #include <zmk/battery.h>
 
-#if IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
+#if defined(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
 #include <zmk/ble.h>
 #include <zmk/endpoints.h>
 #include <zmk/endpoints_types.h>
-#if IS_ENABLED(CONFIG_USB_DEVICE_STACK)
+#if defined(CONFIG_USB_DEVICE_STACK)
 #include <zmk/usb.h>
 #endif
 #else
@@ -136,13 +136,13 @@ static lv_obj_t *base_screen(void) {
 lv_obj_t *zmk_display_status_screen(void) {
     lv_obj_t *s = base_screen();
 
-#if IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
+#if defined(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
     /* PRIMARY (right/central) */
     draw_battery(s, 6, zmk_battery_state_of_charge());
     hline(s, 44);
 
     bool on_usb = false;
-#if IS_ENABLED(CONFIG_USB_DEVICE_STACK)
+#if defined(CONFIG_USB_DEVICE_STACK)
     struct zmk_endpoint_instance ep = zmk_endpoints_selected();
     on_usb = (ep.transport == ZMK_TRANSPORT_USB);
 #endif
