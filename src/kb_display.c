@@ -39,15 +39,15 @@ static void draw_orbit(lv_obj_t *parent, lv_coord_t y_off) {
     lv_canvas_set_buffer(cv, orbit_buf, ORB, ORB, LV_IMG_CF_TRUE_COLOR);
     lv_canvas_fill_bg(cv, GND, LV_OPA_COVER);
 
-    const float cx = ORB / 2.0f, cy = ORB / 2.0f, R = 20.0f;
+    const float cx = ORB / 2.0f, cy = ORB / 2.0f, ballr = 20.0f;
     const float lx = -0.5f, ly = -0.62f, lz = 0.6f;
-    const float ln = sqrtf(lx*lx + ly*ly + lz*lz);
+    const float llen = sqrtf(lx*lx + ly*ly + lz*lz);
     for (int y = 0; y < ORB; y++) {
         for (int x = 0; x < ORB; x++) {
-            float dx = (x - cx) / R, dy = (y - cy) / R, d2 = dx*dx + dy*dy;
+            float dx = (x - cx) / ballr, dy = (y - cy) / ballr, d2 = dx*dx + dy*dy;
             if (d2 > 1.0f) continue;
             float dz = sqrtf(1.0f - d2);
-            float b = (dx*lx + dy*ly + dz*lz) / ln;
+            float b = (dx*lx + dy*ly + dz*lz) / llen;
             b = (b < 0 ? 0 : b) * 0.92f + 0.06f;
             float th = (BAY[y & 3][x & 3] + 0.5f) / 16.0f;
             if (b < th) lv_canvas_set_px_color(cv, x, y, INK);
@@ -55,13 +55,13 @@ static void draw_orbit(lv_obj_t *parent, lv_coord_t y_off) {
     }
     /* rim + a cursor dot with a bright center, on an orbit ring */
     for (int a = 0; a < 360; a += 3) {
-        float r = a * (float)M_PI / 180.0f;
-        int rx = (int)lroundf(cx + cosf(r) * R);
-        int ry = (int)lroundf(cy + sinf(r) * R);
+        float ang = a * (float)M_PI / 180.0f;
+        int rx = (int)lroundf(cx + cosf(ang) * ballr);
+        int ry = (int)lroundf(cy + sinf(ang) * ballr);
         if (rx >= 0 && rx < ORB && ry >= 0 && ry < ORB) lv_canvas_set_px_color(cv, rx, ry, INK);
     }
-    float ca = -0.7f, OR = 27.0f;
-    int ox = (int)lroundf(cx + cosf(ca) * OR), oy = (int)lroundf(cy + sinf(ca) * OR * 0.5f);
+    float ca = -0.7f, orbr = 27.0f;
+    int ox = (int)lroundf(cx + cosf(ca) * orbr), oy = (int)lroundf(cy + sinf(ca) * orbr * 0.5f);
     for (int yy = -2; yy <= 2; yy++) for (int xx = -2; xx <= 2; xx++)
         if (xx*xx + yy*yy <= 6 && ox+xx>=0 && ox+xx<ORB && oy+yy>=0 && oy+yy<ORB)
             lv_canvas_set_px_color(cv, ox+xx, oy+yy, INK);
