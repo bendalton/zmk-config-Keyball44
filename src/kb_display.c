@@ -3,15 +3,18 @@
  *   central  (RIGHT) -> primary: battery, endpoint (USB or BT profile+host), Orbit
  *   peripheral (LEFT) -> companion: battery, split link, big Orbit
  *
- * The nice!view is physically 160x68 landscape but mounted portrait, so we
- * rotate the display 90 deg and lay everything out in a 68 (w) x 160 (h) space.
- * v1 reads state once at boot (no live listeners yet) to confirm rotation +
- * layout; live updates come next.
+ * The nice!view is 160x68 landscape but mounted portrait. LVGL display rotation
+ * is broken for 1-bit panels (zmk#1749), so we draw content UPRIGHT into a
+ * square canvas (portrait 68w x 160h occupies the left strip) and rotate the
+ * whole canvas 90 deg with lv_canvas_transform -- the technique ZMK's own
+ * nice_view / zmk-nice-oled widgets use. v1: state read once at boot.
  */
+#include <zephyr/kernel.h>
 #include <zmk/display/status_screen.h>
 #include <lvgl.h>
 #include <math.h>
 #include <stdio.h>
+#include <string.h>
 
 #include <zmk/battery.h>
 
@@ -26,145 +29,128 @@
 #include <zmk/split/bluetooth/peripheral.h>
 #endif
 
-#define INK   lv_color_black()
-#define GND   lv_color_white()
+#define CW  68     /* portrait width  (physical short side) */
+#define SQ  160    /* square canvas side = portrait height  */
+#define BG  lv_color_white()
+#define FG  lv_color_black()
 
-/* ---- Orbit: lit, dithered sphere on a canvas ---- */
-#define ORB 58
-static lv_color_t orbit_buf[LV_CANVAS_BUF_SIZE_TRUE_COLOR(ORB, ORB)];
-static const uint8_t BAY[4][4] = {{0,8,2,10},{12,4,14,6},{3,11,1,9},{15,7,13,5}};
+static lv_color_t cbuf[SQ * SQ];
 
-static void draw_orbit(lv_obj_t *parent, lv_coord_t y_off) {
-    lv_obj_t *cv = lv_canvas_create(parent);
-    lv_canvas_set_buffer(cv, orbit_buf, ORB, ORB, LV_IMG_CF_TRUE_COLOR);
-    lv_canvas_fill_bg(cv, GND, LV_OPA_COVER);
+static void rotate_canvas(lv_obj_t *canvas) {
+    static lv_color_t tmp[SQ * SQ];
+    memcpy(tmp, cbuf, sizeof(tmp));
+    lv_img_dsc_t img;
+    img.data = (void *)tmp;
+    img.header.cf = LV_IMG_CF_TRUE_COLOR;
+    img.header.always_zero = 0;
+    img.header.w = SQ;
+    img.header.h = SQ;
+    lv_canvas_fill_bg(canvas, BG, LV_OPA_COVER);
+    lv_canvas_transform(canvas, &img, 900, LV_IMG_ZOOM_NONE, -1, 0, SQ / 2, SQ / 2, false);
+}
 
-    const float cx = ORB / 2.0f, cy = ORB / 2.0f, ballr = 20.0f;
+/* ---- draw helpers: all in upright portrait coords (x:0..68, y:0..160) ---- */
+static void d_text(lv_obj_t *cv, const char *t, const lv_font_t *f, lv_coord_t y) {
+    lv_draw_label_dsc_t d;
+    lv_draw_label_dsc_init(&d);
+    d.color = FG; d.font = f; d.align = LV_TEXT_ALIGN_CENTER;
+    lv_canvas_draw_text(cv, 0, y, CW, &d, t);
+}
+
+static void d_fill(lv_obj_t *cv, lv_coord_t x, lv_coord_t y, lv_coord_t w, lv_coord_t h) {
+    lv_draw_rect_dsc_t d;
+    lv_draw_rect_dsc_init(&d);
+    d.bg_color = FG;
+    lv_canvas_draw_rect(cv, x, y, w, h, &d);
+}
+
+static void d_battery(lv_obj_t *cv, lv_coord_t y, uint8_t pct) {
+    const int bw = 46, bx = (CW - bw) / 2, bh = 15;
+    lv_draw_rect_dsc_t o;
+    lv_draw_rect_dsc_init(&o);
+    o.bg_opa = LV_OPA_TRANSP; o.border_color = FG; o.border_width = 1; o.radius = 2;
+    lv_canvas_draw_rect(cv, bx, y, bw, bh, &o);
+    int fw = (bw - 4) * pct / 100; if (fw < 0) fw = 0;
+    if (fw > 0) d_fill(cv, bx + 2, y + 2, fw, bh - 4);
+    d_fill(cv, bx + bw, y + 5, 2, 6);           /* nub */
+    char b[8];
+    snprintf(b, sizeof(b), "%d%%", pct);
+    d_text(cv, b, &lv_font_montserrat_16, y + 19);
+}
+
+static void d_orbit(lv_obj_t *cv, lv_coord_t cy, float ballr) {
+    const float cx = CW / 2.0f;
     const float lx = -0.5f, ly = -0.62f, lz = 0.6f;
     const float llen = sqrtf(lx*lx + ly*ly + lz*lz);
-    for (int y = 0; y < ORB; y++) {
-        for (int x = 0; x < ORB; x++) {
+    static const uint8_t BAY[4][4] = {{0,8,2,10},{12,4,14,6},{3,11,1,9},{15,7,13,5}};
+    int y0 = (int)(cy - ballr - 4), y1 = (int)(cy + ballr + 4);
+    for (int y = y0; y <= y1; y++) {
+        for (int x = 0; x < CW; x++) {
             float dx = (x - cx) / ballr, dy = (y - cy) / ballr, d2 = dx*dx + dy*dy;
             if (d2 > 1.0f) continue;
             float dz = sqrtf(1.0f - d2);
             float b = (dx*lx + dy*ly + dz*lz) / llen;
             b = (b < 0 ? 0 : b) * 0.92f + 0.06f;
-            float th = (BAY[y & 3][x & 3] + 0.5f) / 16.0f;
-            if (b < th) lv_canvas_set_px_color(cv, x, y, INK);
+            float th = (BAY[((y%4)+4)%4][((x%4)+4)%4] + 0.5f) / 16.0f;
+            if (b < th) lv_canvas_set_px_color(cv, x, y, FG);
         }
     }
-    /* rim + a cursor dot with a bright center, on an orbit ring */
+    /* orbit ring + a cursor dot with a bright center */
     for (int a = 0; a < 360; a += 3) {
-        float ang = a * 3.14159265f / 180.0f;
-        int rx = (int)lroundf(cx + cosf(ang) * ballr);
-        int ry = (int)lroundf(cy + sinf(ang) * ballr);
-        if (rx >= 0 && rx < ORB && ry >= 0 && ry < ORB) lv_canvas_set_px_color(cv, rx, ry, INK);
+        float r = a * 3.14159265f / 180.0f;
+        int rx = (int)lroundf(cx + cosf(r) * ballr);
+        int ry = (int)lroundf(cy + sinf(r) * ballr);
+        if (rx >= 0 && rx < CW && ry >= 0 && ry < SQ) lv_canvas_set_px_color(cv, rx, ry, FG);
     }
-    float ca = -0.7f, orbr = 27.0f;
-    int ox = (int)lroundf(cx + cosf(ca) * orbr), oy = (int)lroundf(cy + sinf(ca) * orbr * 0.5f);
+    float ca = -0.7f, orbr = ballr + 6.0f;
+    int ox = (int)lroundf(cx + cosf(ca) * orbr);
+    int oy = (int)lroundf(cy + sinf(ca) * orbr * 0.55f);
     for (int yy = -2; yy <= 2; yy++) for (int xx = -2; xx <= 2; xx++)
-        if (xx*xx + yy*yy <= 6 && ox+xx>=0 && ox+xx<ORB && oy+yy>=0 && oy+yy<ORB)
-            lv_canvas_set_px_color(cv, ox+xx, oy+yy, INK);
-    if (ox>=0 && ox<ORB && oy>=0 && oy<ORB) lv_canvas_set_px_color(cv, ox, oy, GND);
-
-    lv_obj_align(cv, LV_ALIGN_TOP_MID, 0, y_off);
-}
-
-/* ---- battery: outline bar + nub + % label ---- */
-static void draw_battery(lv_obj_t *p, lv_coord_t y, uint8_t pct) {
-    lv_obj_t *body = lv_obj_create(p);
-    lv_obj_remove_style_all(body);
-    lv_obj_set_size(body, 46, 15);
-    lv_obj_align(body, LV_ALIGN_TOP_MID, -1, y);
-    lv_obj_set_style_border_color(body, INK, 0);
-    lv_obj_set_style_border_width(body, 1, 0);
-    lv_obj_set_style_radius(body, 2, 0);
-
-    lv_obj_t *fill = lv_obj_create(body);
-    lv_obj_remove_style_all(fill);
-    int fw = (42 * pct) / 100; if (fw < 0) fw = 0;
-    lv_obj_set_size(fill, fw, 11);
-    lv_obj_align(fill, LV_ALIGN_LEFT_MID, 1, 0);
-    lv_obj_set_style_bg_color(fill, INK, 0);
-    lv_obj_set_style_bg_opa(fill, LV_OPA_COVER, 0);
-
-    lv_obj_t *nub = lv_obj_create(p);
-    lv_obj_remove_style_all(nub);
-    lv_obj_set_size(nub, 2, 6);
-    lv_obj_align_to(nub, body, LV_ALIGN_OUT_RIGHT_MID, 0, 0);
-    lv_obj_set_style_bg_color(nub, INK, 0);
-    lv_obj_set_style_bg_opa(nub, LV_OPA_COVER, 0);
-
-    char buf[8];
-    snprintf(buf, sizeof(buf), "%d%%", pct);
-    lv_obj_t *l = lv_label_create(p);
-    lv_label_set_text(l, buf);
-    lv_obj_set_style_text_font(l, &lv_font_montserrat_16, 0);
-    lv_obj_set_style_text_color(l, INK, 0);
-    lv_obj_align(l, LV_ALIGN_TOP_MID, 0, y + 20);
-}
-
-static lv_obj_t *label(lv_obj_t *p, const char *t, const lv_font_t *f, lv_coord_t y) {
-    lv_obj_t *l = lv_label_create(p);
-    lv_label_set_text(l, t);
-    lv_obj_set_style_text_font(l, f, 0);
-    lv_obj_set_style_text_color(l, INK, 0);
-    lv_obj_align(l, LV_ALIGN_TOP_MID, 0, y);
-    return l;
-}
-
-static void hline(lv_obj_t *p, lv_coord_t y) {
-    lv_obj_t *ln = lv_obj_create(p);
-    lv_obj_remove_style_all(ln);
-    lv_obj_set_size(ln, 52, 1);
-    lv_obj_align(ln, LV_ALIGN_TOP_MID, 0, y);
-    lv_obj_set_style_bg_color(ln, INK, 0);
-    lv_obj_set_style_bg_opa(ln, LV_OPA_COVER, 0);
-}
-
-static lv_obj_t *base_screen(void) {
-    lv_disp_set_rotation(lv_disp_get_default(), LV_DISP_ROT_90);
-    lv_obj_t *s = lv_obj_create(NULL);
-    lv_obj_remove_style_all(s);
-    lv_obj_set_size(s, 68, 160);
-    lv_obj_set_style_bg_color(s, GND, 0);
-    lv_obj_set_style_bg_opa(s, LV_OPA_COVER, 0);
-    lv_obj_clear_flag(s, LV_OBJ_FLAG_SCROLLABLE);
-    return s;
+        if (xx*xx + yy*yy <= 6 && ox+xx>=0 && ox+xx<CW && oy+yy>=0 && oy+yy<SQ)
+            lv_canvas_set_px_color(cv, ox+xx, oy+yy, FG);
+    if (ox>=0 && ox<CW && oy>=0 && oy<SQ) lv_canvas_set_px_color(cv, ox, oy, BG);
 }
 
 lv_obj_t *zmk_display_status_screen(void) {
-    lv_obj_t *s = base_screen();
+    lv_obj_t *screen = lv_obj_create(NULL);
+    lv_obj_remove_style_all(screen);
+    lv_obj_set_style_bg_color(screen, BG, 0);
+    lv_obj_set_style_bg_opa(screen, LV_OPA_COVER, 0);
+    lv_obj_clear_flag(screen, LV_OBJ_FLAG_SCROLLABLE);
+
+    lv_obj_t *cv = lv_canvas_create(screen);
+    lv_canvas_set_buffer(cv, cbuf, SQ, SQ, LV_IMG_CF_TRUE_COLOR);
+    lv_obj_align(cv, LV_ALIGN_TOP_LEFT, 0, 0);
+    lv_canvas_fill_bg(cv, BG, LV_OPA_COVER);
 
 #if defined(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
-    /* PRIMARY (right/central) */
-    draw_battery(s, 6, zmk_battery_state_of_charge());
-    hline(s, 44);
-
+    d_battery(cv, 8, zmk_battery_state_of_charge());
+    d_fill(cv, 8, 46, CW - 16, 1);
     bool on_usb = false;
 #if defined(CONFIG_USB_DEVICE_STACK)
     struct zmk_endpoint_instance ep = zmk_endpoints_selected();
     on_usb = (ep.transport == ZMK_TRANSPORT_USB);
 #endif
     if (on_usb) {
-        label(s, "USB", &lv_font_montserrat_16, 66);
+        d_text(cv, "USB", &lv_font_montserrat_26, 62);
     } else {
         char pn[4];
         snprintf(pn, sizeof(pn), "%d", zmk_ble_active_profile_index() + 1);
-        label(s, "BT", &lv_font_montserrat_14, 52);
-        label(s, pn, &lv_font_montserrat_26, 62);
-        label(s, zmk_ble_active_profile_is_connected() ? "CONNECTED" : "PAIRING",
-              &lv_font_montserrat_14, 92);
+        d_text(cv, "BT", &lv_font_montserrat_14, 54);
+        d_text(cv, pn, &lv_font_montserrat_26, 66);
+        d_text(cv, zmk_ble_active_profile_is_connected() ? "CONNECTED" : "PAIRING",
+               &lv_font_montserrat_14, 96);
     }
-    hline(s, 108);
-    draw_orbit(s, 112);
+    d_fill(cv, 8, 112, CW - 16, 1);
+    d_orbit(cv, 138, 18.0f);
 #else
-    /* COMPANION (left/peripheral) */
-    draw_battery(s, 6, zmk_battery_state_of_charge());
-    label(s, zmk_split_bt_peripheral_is_connected() ? "LINKED" : "NO LINK",
-          &lv_font_montserrat_14, 48);
-    hline(s, 66);
-    draw_orbit(s, 78);
+    d_battery(cv, 8, zmk_battery_state_of_charge());
+    d_text(cv, zmk_split_bt_peripheral_is_connected() ? "LINKED" : "NO LINK",
+           &lv_font_montserrat_14, 50);
+    d_fill(cv, 8, 68, CW - 16, 1);
+    d_orbit(cv, 118, 24.0f);
 #endif
-    return s;
+
+    rotate_canvas(cv);
+    return screen;
 }
