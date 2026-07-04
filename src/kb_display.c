@@ -55,7 +55,7 @@ static void draw_orbit(lv_obj_t *parent, lv_coord_t y_off) {
     }
     /* rim + a cursor dot with a bright center, on an orbit ring */
     for (int a = 0; a < 360; a += 3) {
-        float ang = a * (float)M_PI / 180.0f;
+        float ang = a * 3.14159265f / 180.0f;
         int rx = (int)lroundf(cx + cosf(ang) * ballr);
         int ry = (int)lroundf(cy + sinf(ang) * ballr);
         if (rx >= 0 && rx < ORB && ry >= 0 && ry < ORB) lv_canvas_set_px_color(cv, rx, ry, INK);
