@@ -1,40 +1,47 @@
 /*
- * Keyball44 dual nice!view dashboard.
+ * Keyball44 dual nice!view dashboard (portrait, live-updating).
  *   central  (RIGHT) -> primary: battery, endpoint (USB or BT profile+host), Orbit
  *   peripheral (LEFT) -> companion: battery, split link, big Orbit
  *
- * The nice!view is 160x68 landscape but mounted portrait. LVGL display rotation
- * is broken for 1-bit panels (zmk#1749), so we draw content UPRIGHT into a
- * square canvas (portrait 68w x 160h occupies the left strip) and rotate the
- * whole canvas 90 deg with lv_canvas_transform -- the technique ZMK's own
- * nice_view / zmk-nice-oled widgets use. v1: state read once at boot.
+ * Portrait via canvas rotation (lv_canvas_transform) since LVGL display
+ * rotation is a no-op on 1-bit panels (zmk#1749). Content is drawn upright into
+ * a 160x160 canvas (portrait 68x160 in the left strip) then rotated 90 deg.
+ * Redraws on ZMK state events via the display work queue.
  */
 #include <zephyr/kernel.h>
-#include <zmk/display/status_screen.h>
 #include <lvgl.h>
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
 
+#include <zmk/display.h>
+#include <zmk/display/status_screen.h>
+#include <zmk/event_manager.h>
 #include <zmk/battery.h>
+#include <zmk/events/battery_state_changed.h>
 
 #if defined(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
 #include <zmk/ble.h>
 #include <zmk/endpoints.h>
 #include <zmk/endpoints_types.h>
+#include <zmk/events/ble_active_profile_changed.h>
+#include <zmk/events/endpoint_changed.h>
 #if defined(CONFIG_USB_DEVICE_STACK)
 #include <zmk/usb.h>
+#include <zmk/events/usb_conn_state_changed.h>
 #endif
 #else
 #include <zmk/split/bluetooth/peripheral.h>
+#include <zmk/events/split_peripheral_status_changed.h>
 #endif
 
-#define CW  68     /* portrait width  (physical short side) */
-#define SQ  160    /* square canvas side = portrait height  */
+#define CW  68
+#define SQ  160
 #define BG  lv_color_white()
 #define FG  lv_color_black()
 
 static lv_color_t cbuf[SQ * SQ];
+static lv_obj_t *g_cv;
 
 static void rotate_canvas(lv_obj_t *canvas) {
     static lv_color_t tmp[SQ * SQ];
@@ -49,7 +56,6 @@ static void rotate_canvas(lv_obj_t *canvas) {
     lv_canvas_transform(canvas, &img, 900, LV_IMG_ZOOM_NONE, -1, 0, SQ / 2, SQ / 2, false);
 }
 
-/* ---- draw helpers: all in upright portrait coords (x:0..68, y:0..160) ---- */
 static void d_text(lv_obj_t *cv, const char *t, const lv_font_t *f, lv_coord_t y) {
     lv_draw_label_dsc_t d;
     lv_draw_label_dsc_init(&d);
@@ -72,7 +78,7 @@ static void d_battery(lv_obj_t *cv, lv_coord_t y, uint8_t pct) {
     lv_canvas_draw_rect(cv, bx, y, bw, bh, &o);
     int fw = (bw - 4) * pct / 100; if (fw < 0) fw = 0;
     if (fw > 0) d_fill(cv, bx + 2, y + 2, fw, bh - 4);
-    d_fill(cv, bx + bw, y + 5, 2, 6);           /* nub */
+    d_fill(cv, bx + bw, y + 5, 2, 6);
     char b[8];
     snprintf(b, sizeof(b), "%d%%", pct);
     d_text(cv, b, &lv_font_montserrat_16, y + 19);
@@ -95,7 +101,6 @@ static void d_orbit(lv_obj_t *cv, lv_coord_t cy, float ballr) {
             if (b < th) lv_canvas_set_px_color(cv, x, y, FG);
         }
     }
-    /* orbit ring + a cursor dot with a bright center */
     for (int a = 0; a < 360; a += 3) {
         float r = a * 3.14159265f / 180.0f;
         int rx = (int)lroundf(cx + cosf(r) * ballr);
@@ -111,6 +116,63 @@ static void d_orbit(lv_obj_t *cv, lv_coord_t cy, float ballr) {
     if (ox>=0 && ox<CW && oy>=0 && oy<SQ) lv_canvas_set_px_color(cv, ox, oy, BG);
 }
 
+static void redraw(void) {
+    if (!g_cv) return;
+    lv_canvas_fill_bg(g_cv, BG, LV_OPA_COVER);
+
+#if defined(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
+    d_battery(g_cv, 8, zmk_battery_state_of_charge());
+    d_fill(g_cv, 8, 46, CW - 16, 1);
+    bool on_usb = false;
+#if defined(CONFIG_USB_DEVICE_STACK)
+    struct zmk_endpoint_instance ep = zmk_endpoints_selected();
+    on_usb = (ep.transport == ZMK_TRANSPORT_USB);
+#endif
+    if (on_usb) {
+        d_text(g_cv, "USB", &lv_font_montserrat_26, 62);
+    } else {
+        char pn[4];
+        snprintf(pn, sizeof(pn), "%d", zmk_ble_active_profile_index() + 1);
+        d_text(g_cv, "BT", &lv_font_montserrat_14, 54);
+        d_text(g_cv, pn, &lv_font_montserrat_26, 66);
+        d_text(g_cv, zmk_ble_active_profile_is_connected() ? "CONNECTED" : "PAIRING",
+               &lv_font_montserrat_14, 96);
+    }
+    d_fill(g_cv, 8, 112, CW - 16, 1);
+    d_orbit(g_cv, 138, 18.0f);
+#else
+    d_battery(g_cv, 8, zmk_battery_state_of_charge());
+    d_text(g_cv, zmk_split_bt_peripheral_is_connected() ? "LINKED" : "NO LINK",
+           &lv_font_montserrat_14, 50);
+    d_fill(g_cv, 8, 68, CW - 16, 1);
+    d_orbit(g_cv, 118, 24.0f);
+#endif
+
+    rotate_canvas(g_cv);
+}
+
+static void redraw_cb(struct k_work *work) { redraw(); }
+static K_WORK_DEFINE(redraw_work, redraw_cb);
+
+static int kb_display_listener(const zmk_event_t *eh) {
+    if (zmk_display_is_initialized()) {
+        k_work_submit_to_queue(zmk_display_work_q(), &redraw_work);
+    }
+    return ZMK_EV_EVENT_BUBBLE;
+}
+
+ZMK_LISTENER(kb_display, kb_display_listener);
+ZMK_SUBSCRIPTION(kb_display, zmk_battery_state_changed);
+#if defined(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
+ZMK_SUBSCRIPTION(kb_display, zmk_ble_active_profile_changed);
+ZMK_SUBSCRIPTION(kb_display, zmk_endpoint_changed);
+#if defined(CONFIG_USB_DEVICE_STACK)
+ZMK_SUBSCRIPTION(kb_display, zmk_usb_conn_state_changed);
+#endif
+#else
+ZMK_SUBSCRIPTION(kb_display, zmk_split_peripheral_status_changed);
+#endif
+
 lv_obj_t *zmk_display_status_screen(void) {
     lv_obj_t *screen = lv_obj_create(NULL);
     lv_obj_remove_style_all(screen);
@@ -118,39 +180,10 @@ lv_obj_t *zmk_display_status_screen(void) {
     lv_obj_set_style_bg_opa(screen, LV_OPA_COVER, 0);
     lv_obj_clear_flag(screen, LV_OBJ_FLAG_SCROLLABLE);
 
-    lv_obj_t *cv = lv_canvas_create(screen);
-    lv_canvas_set_buffer(cv, cbuf, SQ, SQ, LV_IMG_CF_TRUE_COLOR);
-    lv_obj_align(cv, LV_ALIGN_TOP_LEFT, 0, 0);
-    lv_canvas_fill_bg(cv, BG, LV_OPA_COVER);
+    g_cv = lv_canvas_create(screen);
+    lv_canvas_set_buffer(g_cv, cbuf, SQ, SQ, LV_IMG_CF_TRUE_COLOR);
+    lv_obj_align(g_cv, LV_ALIGN_TOP_LEFT, 0, 0);
 
-#if defined(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
-    d_battery(cv, 8, zmk_battery_state_of_charge());
-    d_fill(cv, 8, 46, CW - 16, 1);
-    bool on_usb = false;
-#if defined(CONFIG_USB_DEVICE_STACK)
-    struct zmk_endpoint_instance ep = zmk_endpoints_selected();
-    on_usb = (ep.transport == ZMK_TRANSPORT_USB);
-#endif
-    if (on_usb) {
-        d_text(cv, "USB", &lv_font_montserrat_26, 62);
-    } else {
-        char pn[4];
-        snprintf(pn, sizeof(pn), "%d", zmk_ble_active_profile_index() + 1);
-        d_text(cv, "BT", &lv_font_montserrat_14, 54);
-        d_text(cv, pn, &lv_font_montserrat_26, 66);
-        d_text(cv, zmk_ble_active_profile_is_connected() ? "CONNECTED" : "PAIRING",
-               &lv_font_montserrat_14, 96);
-    }
-    d_fill(cv, 8, 112, CW - 16, 1);
-    d_orbit(cv, 138, 18.0f);
-#else
-    d_battery(cv, 8, zmk_battery_state_of_charge());
-    d_text(cv, zmk_split_bt_peripheral_is_connected() ? "LINKED" : "NO LINK",
-           &lv_font_montserrat_14, 50);
-    d_fill(cv, 8, 68, CW - 16, 1);
-    d_orbit(cv, 118, 24.0f);
-#endif
-
-    rotate_canvas(cv);
+    redraw();
     return screen;
 }
