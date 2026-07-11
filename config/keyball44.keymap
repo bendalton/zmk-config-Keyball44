@@ -78,6 +78,18 @@
             key-positions = <9 10>;
             bindings = <&kp MINUS>;
         };
+        // Top-row symbol cluster continues: I+O = plus, P+\ = pipe
+        // (pipe lives next to the backslash key it shifts from).
+        combo_plus {
+            timeout-ms = <50>;
+            key-positions = <8 9>;
+            bindings = <&kp PLUS>;
+        };
+        combo_pipe {
+            timeout-ms = <50>;
+            key-positions = <10 11>;
+            bindings = <&kp PIPE>;
+        };
         combo_question {
             timeout-ms = <50>;
             key-positions = <28 29>;
@@ -91,9 +103,24 @@
             label = "HOMEROW_MODS";
             #binding-cells = <2>;
             tapping-term-ms = <250>;
-            quick_tap_ms = <150>;
+            quick-tap-ms = <150>;
             require-prior-idle-ms = <125>;
             flavor = "tap-preferred";
+            bindings = <&kp>, <&kp>;
+        };
+
+        // Thumb mods: NO require-prior-idle-ms. Thumbs get pressed right after
+        // typing/layer taps by design, so the "instant tap if recently typed"
+        // rule that protects the finger home-row mods turns Cmd-holds into
+        // stray Enters here. Balanced flavor so chording another key while
+        // holding resolves as the modifier without waiting out the term.
+        hmt: thumb_mods {
+            compatible = "zmk,behavior-hold-tap";
+            label = "THUMB_MODS";
+            #binding-cells = <2>;
+            tapping-term-ms = <200>;
+            quick-tap-ms = <150>;
+            flavor = "balanced";
             bindings = <&kp>, <&kp>;
         };
 
@@ -102,8 +129,7 @@
             label = "BACKSPACE_SHIFT";
             #binding-cells = <2>;
             tapping-term-ms = <200>;
-            quick_tap_ms = <175>;
-            require-prior-idle-ms = <125>;
+            quick-tap-ms = <175>;
             flavor = "tap-preferred";
             bindings = <&kp>, <&kp>;
         };
@@ -114,7 +140,8 @@
             #binding-cells = <0>;
             bindings = <&kp ESC>, <&kp GRAVE>;
             mods = <(MOD_LGUI|MOD_LSFT|MOD_RGUI|MOD_RSFT)>;
-            keep-mods = <(MOD_LGUI|MOD_RGUI)>;
+            // Keep shift so shift+combo yields ~ (tilde), not a bare backtick.
+            keep-mods = <(MOD_LGUI|MOD_RGUI|MOD_LSFT|MOD_RSFT)>;
         };
     };
 
@@ -139,7 +166,7 @@
 &kp N           &hm LGUI M &hm LALT COMMA &hm LCTRL DOT &kp SLASH  &kp RIGHT_SHIFT
 // Row 3 - Thumb row (5 left + 3 right = 8 keys)
 // Left thumb keys (5 keys): first was dead -> now caps_word
-&none           &caps_word &hm LSHFT DEL &hm LGUI RET &mo NUMBERS
+&none           &caps_word &hmt LSHFT DEL &hmt LGUI RET &mo NUMBERS
 // Right thumb keys (3 keys)
 &lt NAV SPACE    &bkspc_shft LSHFT BSPC &none
             >;
@@ -165,7 +192,7 @@
 // Row 2 Right - 6 keys (M: GUI->CTRL, DOT: CTRL->GUI)
 &trans          &hm LCTRL M &trans    &hm LGUI DOT &trans    &trans
 // Row 3 - Thumb row (RET: GUI->CTRL)
-&trans          &trans     &trans     &hm LCTRL RET &trans
+&trans          &trans     &trans     &hmt LCTRL RET &trans
 &trans          &trans     &trans
             >;
         };
