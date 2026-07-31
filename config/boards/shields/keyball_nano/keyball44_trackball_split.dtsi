@@ -1,0 +1,30 @@
+/*
+ * Split trackball forwarding, shared by the right half (sensor host) and the
+ * dongle (receiver). Canonical ZMK pattern from app/tests/ble/split/peripheral-input.
+ *
+ *  - `split_input` is a zmk,input-split proxy. On the PERIPHERAL (right half) we
+ *    point it at the physical PMW3610 (`&split_input { device = <&trackball>; }`)
+ *    so raw REL_X/REL_Y events are forwarded over BLE. On the CENTRAL (dongle)
+ *    the same proxy re-emits those events locally.
+ *  - `trackball_listener` turns the events into HID. It must run ONLY on the
+ *    central, so it is defined disabled here and enabled in the dongle overlay.
+ *    (A listener on a peripheral would try to emit HID it doesn't own.)
+ */
+
+/ {
+    splits {
+        #address-cells = <1>;
+        #size-cells = <0>;
+
+        split_input: split_input@0 {
+            compatible = "zmk,input-split";
+            reg = <0>;
+        };
+    };
+
+    trackball_listener: trackball_listener {
+        compatible = "zmk,input-listener";
+        status = "disabled";        /* enabled on the dongle only */
+        device = <&split_input>;
+    };
+};

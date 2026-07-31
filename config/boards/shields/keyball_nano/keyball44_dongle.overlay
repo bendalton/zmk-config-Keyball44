@@ -1,0 +1,56 @@
+/*
+ * Keyball44 DONGLE (central).
+ *
+ * A keyless BLE central: it holds the keymap, connects to both halves as
+ * peripherals, and talks to the host over USB/BLE. No key matrix, no display.
+ *
+ * Trackball: the sensor physically lives on the right half (a peripheral); its
+ * motion is forwarded here over BLE via zmk,input-split. We enable the listener
+ * and re-implement the old driver-side scroll/snipe (which read the active
+ * layer and therefore only work on the central) as layer-gated input-processors.
+ */
+
+#include <input/processors.dtsi>
+#include "keyball44_common.dtsi"
+#include "keyball44_trackball_split.dtsi"
+
+/ {
+    chosen {
+        /* Keyless: satisfy ZMK's kscan requirement with a mock scanner. The
+         * shared physical-layout also points its kscan at &kscan0 (this mock). */
+        zmk,kscan = &kscan0;
+    };
+
+    kscan0: kscan_mock {
+        compatible = "zmk,kscan-mock";
+        columns = <0>;
+        rows = <0>;
+        events = <0>;
+    };
+};
+
+/* Receive the forwarded trackball and turn it into pointer HID.
+ *
+ * Layer 6 = SCROLL, layer 7 = SNIPE (see keyball44.keymap #defines). On those
+ * layers the child nodes override the processing:
+ *   - SCROLL: map ball X/Y onto the scroll wheel, then scale it DOWN (raw ball
+ *     deltas are far too large for wheel ticks). zip_scroll_scaler <1 N>: bigger
+ *     N == slower scroll. Start at /16 and tune to taste.
+ *   - SNIPE:  scale pointer X/Y to ~1/4 speed (matches the old 480 vs 1872 CPI
+ *     ratio). zip_xy_scaler <1 N>: bigger N == slower/more precise.
+ * Orientation/inversion stays in the PMW3610 driver conf on the right half, so
+ * events arrive here already corrected.
+ */
+&trackball_listener {
+    status = "okay";
+
+    scroller {
+        layers = <6>;
+        input-processors = <&zip_xy_to_scroll_mapper>, <&zip_scroll_scaler 1 16>;
+    };
+
+    sniper {
+        layers = <7>;
+        input-processors = <&zip_xy_scaler 1 4>;
+    };
+};

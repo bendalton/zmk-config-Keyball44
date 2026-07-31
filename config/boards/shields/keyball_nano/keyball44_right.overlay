@@ -3,12 +3,17 @@
  *
  * SPDX-License-Identifier: MIT
  */
- 
+
 #include "keyball44.dtsi"
+#include "keyball44_trackball_split.dtsi"
 
 &default_transform {
     col-offset = <6>;
 };
+
+/* nice!view CS override (moved here from the keymap so the shared keymap stays
+ * display-free and the dongle build -- which has no nice!view -- can use it). */
+&nice_view_spi { cs-gpios = <&pro_micro 1 GPIO_ACTIVE_HIGH>; };
 
 &kscan0 {
 	col-gpios
@@ -54,15 +59,15 @@
         reg = <0>;
         spi-max-frequency = <2000000>;
         irq-gpios = <&gpio1 11 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
-	scroll-layers = <6>;
-	snipe-layers = <7>;
+        /* scroll-layers/snipe-layers REMOVED: the driver implements those by
+         * reading the active layer, which only exists on the central. This half
+         * is now a peripheral, so it just forwards raw motion; scroll/snipe are
+         * re-created on the dongle via layer-gated input-processors. */
     };
 };
 
-/ {
-  trackball_listener {
-    compatible = "zmk,input-listener";
+/* Forward this half's trackball to the dongle. The listener stays disabled here
+ * (defined in keyball44_trackball_split.dtsi); only the dongle enables it. */
+&split_input {
     device = <&trackball>;
-
-  };
 };
