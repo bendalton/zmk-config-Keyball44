@@ -40,6 +40,11 @@ maintain one short link each.
   the active layer, which exists only on the central, so they are now
   layer-gated `input-processors` on the dongle (`keyball44_dongle.overlay`).
   The two scaler values there are the tuning knobs.
+- **PMW3610 driver** is central-only upstream: it reads the active layer (and
+  the behaviour queue) unconditionally, and ZMK compiles neither into a
+  peripheral. `src/pmw3610_peripheral_stubs.c` supplies weak stubs so the right
+  half links; they are never semantically live, because the layer lists on the
+  sensor node are empty.
 - **Displays**: content is chosen by split *role*, geometry by *side*
   (`src/kb_display.c`). Both halves are peripherals now, so both show
   battery + split link + Orbit, each in its own case-window box. Nothing
