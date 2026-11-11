@@ -12,7 +12,7 @@ layers:
   - {t: I, h: Scroll}
   - O
   - P
-  - {t: \, s: '|'}
+  - F18
   - $$mdi:apple-keyboard-caps$$
   - A
   - S
