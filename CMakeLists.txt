@@ -13,3 +13,10 @@ if(CONFIG_PMW3610 AND CONFIG_ZMK_SPLIT AND NOT CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
   zephyr_library_named(keyball_pmw3610_shim)
   zephyr_library_sources(src/pmw3610_peripheral_stubs.c)
 endif()
+
+# RAM-only password macro (&pwd). Behaviors run on the central only, so only
+# compile it there (dongle, or the right half on a non-dongle build). Added to
+# the `app` target so it gets ZMK's include paths.
+if((NOT CONFIG_ZMK_SPLIT) OR CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
+  target_sources(app PRIVATE src/behavior_ram_macro.c)
+endif()

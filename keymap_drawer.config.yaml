@@ -117,6 +117,13 @@ parse_config:
     type: trans
 
   raw_binding_map:
+    # RAM password macro
+    "&pwd 0": "PW REC"
+    "&pwd 1": "PW PLAY"
+    "&pwd 2": "PW CLR"
+    "&pwd PWD_REC": "PW REC"
+    "&pwd PWD_PLAY": "PW PLAY"
+    "&pwd PWD_CLR": "PW CLR"
     # Layers
     "&ltq 1 BACKSPACE":
       tap:  $$mdi:backspace$$

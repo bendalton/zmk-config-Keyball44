@@ -1,0 +1,22 @@
+# RAM-only macro recorded at runtime (see src/behavior_ram_macro.c).
+# param1: 0 = record, 1 = play, 2 = clear
+
+description: Record-at-runtime, RAM-only keystroke macro (e.g. a password)
+
+compatible: "zmk,behavior-ram-macro"
+
+include: one_param.yaml
+
+properties:
+  wait-ms:
+    type: int
+    default: 30
+    description: Delay between each replayed press/release.
+  idle-timeout-ms:
+    type: int
+    default: 30000
+    description: Abort (and wipe) a recording after this long with no keystrokes.
+  max-events:
+    type: int
+    default: 256
+    description: Buffer size in press/release events (2 per character, 4 for a shifted one).

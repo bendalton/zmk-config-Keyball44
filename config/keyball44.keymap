@@ -7,6 +7,11 @@
 #define SCROLL  6
 #define SNIPE   7
 
+// &pwd params (see behaviors { pwd } below)
+#define PWD_REC  0
+#define PWD_PLAY 1
+#define PWD_CLR  2
+
 #include <behaviors/mouse_keys.dtsi>
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/bt.h>
@@ -144,6 +149,18 @@
             bindings = <&kp>, <&kp>;
         };
         
+        // RAM-only password macro (src/behavior_ram_macro.c). PWD_REC, type
+        // the password (it still reaches the host, so type it into the real
+        // prompt), then Enter/Esc saves it -- the Enter/Esc itself is sent
+        // but not stored. PWD_PLAY types it back. Lives only in the central's
+        // RAM: gone on reset/power loss, never in flash or over split BLE.
+        // 30s of no typing while recording aborts + wipes.
+        pwd: password_macro {
+            compatible = "zmk,behavior-ram-macro";
+            #binding-cells = <1>;
+            display-name = "Password Macro";
+        };
+
         gresc: grave_escape {
             compatible = "zmk,behavior-mod-morph";
             label = "GRAVE_ESCAPE";
@@ -286,14 +303,16 @@
             label = "CONTROL";
             display-name = "Ctrl";
             bindings = <
-// Row 0 Left - 6 keys
-&bootloader     &none      &tog WINDOWS      &none      &none      &none
+// Row 0 Left - 6 keys  (R = record password macro)
+&bootloader     &none      &tog WINDOWS      &none      &pwd PWD_REC &none
 // Row 0 Right - 6 keys
-&none           &none      &none      &none      &none      &bootloader
+// (far-right &bootloader removed -- too easy to hit next to P/;. The left
+// one at Z+Esc stays. Right half: double-short RST-GND to flash.)
+&none           &none      &none      &none      &none      &none
 // Row 1 Left - 6 keys
 &none           &none      &none      &none      &none      &none
-// Row 1 Right - 6 keys
-&none           &none      &none      &none      &none      &none
+// Row 1 Right - 6 keys  (; = play password macro)
+&none           &none      &none      &none      &pwd PWD_PLAY &none
 // Row 2 Left - 6 keys
 &bt BT_CLR      &none      &none      &none      &none      &none
 // Row 2 Right - 6 keys
