@@ -186,7 +186,11 @@
 // Row 0 Left - 6 keys
 &gresc          &kp Q      &kp W      &kp E      &kp R      &kp T
 // Row 0 Right - 6 keys
-&kp Y           &lt SNIPE U &lt SCROLL I &kp O      &kp P      &kp BSLH
+// Far-right key = F18, the meeting mute/push-to-talk key. Tap/hold logic and
+// the actual mic muting live in Hammerspoon on the Mac (~/.hammerspoon), so it
+// works in Meet/Teams/Zoom without focus. Backslash is still on SYMBOL, and
+// the P+\ pipe combo still fires (it's by position).
+&kp Y           &lt SNIPE U &lt SCROLL I &kp O      &kp P      &kp F18
 // Row 1 Left - 6 keys
 &kp CAPS        &kp A      &kp S      &kp D      &kp F      &kp G
 // Row 1 Right - 6 keys
