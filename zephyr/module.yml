@@ -2,3 +2,6 @@ name: keyball-dashboard
 build:
   cmake: .
   kconfig: Kconfig
+  settings:
+    # dts/bindings/ holds the custom RAM-macro behavior binding.
+    dts_root: .

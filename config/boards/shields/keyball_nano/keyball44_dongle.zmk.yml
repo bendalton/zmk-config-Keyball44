@@ -1,0 +1,14 @@
+file_format: "1"
+id: keyball44_dongle
+name: Keyball44 Dongle
+type: shield
+url: https://github.com/Yowkees/keyball
+requires: [pro_micro]
+# Keyless BLE central. It has no matrix and no display of its own; it holds the
+# keymap, hosts ZMK Studio over USB, and turns the trackball motion forwarded
+# from the right half into pointer HID. Deliberately NOT listed in
+# keyball44.zmk.yml's `siblings`: those are the two halves that make up one
+# physical keyboard, and tooling pairs them left/right.
+features:
+  - pointer
+  - studio

@@ -6,6 +6,16 @@
 
 #include "keyball44.dtsi"
 
+/* No &nice_view_spi CS override here on purpose. ZMK's own
+ * nice_view_adapter/boards/nice_nano_v2.overlay already sets
+ * cs-gpios = <&pro_micro 1 GPIO_ACTIVE_HIGH> -- the identical value -- so the
+ * override this config used to carry was always a no-op. It also cannot live
+ * in a shield overlay: shield overlays are concatenated in SHIELD order, so
+ * `nice_view_spi` is not defined yet when this file is read (it comes from the
+ * adapter, listed after us). It used to work only because it sat in the
+ * keymap, which Zephyr applies last.
+ */
+
 &kscan0 {
 	col-gpios
 		= <&pro_micro 4 GPIO_ACTIVE_HIGH>

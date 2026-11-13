@@ -1,7 +1,18 @@
 /*
- * Keyball44 dual nice!view dashboard (portrait, live-updating).
- *   central  (RIGHT) -> primary: battery, endpoint (USB or BT profile+host), Orbit
- *   peripheral (LEFT) -> companion: battery, split link, big Orbit
+ * Keyball44 nice!view dashboard (portrait, live-updating).
+ *
+ * Two independent axes, deliberately kept separate:
+ *   ROLE  decides the CONTENT (which ZMK state is even readable here)
+ *     central    -> primary: battery, endpoint (USB or BT profile+host), Orbit
+ *     peripheral -> companion: battery, split link, big Orbit
+ *   SIDE  decides the GEOMETRY (where the case window is)
+ *     left / right each have their own content box, tuned below.
+ *
+ * In the DONGLE setup both halves are peripherals, so both render the
+ * companion content -- but the right half still needs the RIGHT box to clear
+ * its case window. Conflating the two axes is what made the right screen draw
+ * full-width after the dongle switch. The central branch is retained (unused
+ * while a dongle is central) so reverting to right-as-central just works.
  *
  * Portrait via canvas rotation (lv_canvas_transform); LVGL display rotation is
  * a no-op on 1-bit panels (zmk#1749). Content drawn upright into a 160x160
@@ -44,14 +55,43 @@
 #define FG  lv_color_black()
 
 /* ---- per-side fit: content box in portrait coords. Tune these. ---- */
-/* RIGHT/primary: shifted fully left + ~4mm smaller each way (case window). */
+/* RIGHT: shifted fully left + ~4mm smaller each way (case window). */
 #define R_X   0      /* box left edge  (lower = further left)   */
 #define R_W   45     /* box width      (68 - ~4mm)              */
 #define R_TOP 6      /* top margin                              */
-/* LEFT/companion: full width, centered. */
+/* LEFT: full width, centered. */
 #define L_X   0
 #define L_W   68
 #define L_TOP 8
+
+/* Pick the box by SIDE (shield), never by role -- see the header note. */
+#if defined(CONFIG_SHIELD_KEYBALL44_RIGHT)
+#define BOX_X   R_X
+#define BOX_W   R_W
+#define BOX_TOP R_TOP
+#else
+#define BOX_X   L_X
+#define BOX_W   L_W
+#define BOX_TOP L_TOP
+#endif
+
+/* The Orbit must fit the box, not just the canvas: d_orbit() clips to the
+ * 68px canvas, so a radius tuned for the wide LEFT box would spill under the
+ * RIGHT half's narrower case bezel. The orbiting dot sits at r+6 (+2 for the
+ * dot itself), so the usable radius is BOX_W/2 - 8. Clamp, never upscale --
+ * the left keeps its hand-tuned sizes exactly. */
+#define ORBIT_FIT     (BOX_W / 2.0f - 8.0f)
+#define ORBIT_R(pref) ((pref) < ORBIT_FIT ? (float)(pref) : ORBIT_FIT)
+
+/* montserrat_14 fits ~4 chars in the narrow RIGHT box (same budget as the
+ * central branch's CONN/PAIR), so the split-link label shortens with it. */
+#if BOX_W < 56
+#define LINK_YES "LINK"
+#define LINK_NO  "LOST"
+#else
+#define LINK_YES "LINKED"
+#define LINK_NO  "NO LINK"
+#endif
 
 static lv_color_t cbuf[SQ * SQ];
 static lv_obj_t *g_cv;
@@ -139,9 +179,11 @@ static void redraw(void) {
     if (!g_cv) return;
     lv_canvas_fill_bg(g_cv, BG, LV_OPA_COVER);
 
+    /* Geometry: side. Content below: role. */
+    BXo = BOX_X; BWo = BOX_W;
+    int y = BOX_TOP;
+
 #if defined(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
-    BXo = R_X; BWo = R_W;
-    int y = R_TOP;
     d_battery(g_cv, y, zmk_battery_state_of_charge());          /* ~y..y+34 */
     d_hline(g_cv, y + 37);
     bool on_usb = false;
@@ -160,15 +202,13 @@ static void redraw(void) {
                &lv_font_montserrat_14, y + 86);
     }
     d_hline(g_cv, y + 102);
-    d_orbit(g_cv, y + 126, 15.0f);
+    d_orbit(g_cv, y + 126, ORBIT_R(15.0f));
 #else
-    BXo = L_X; BWo = L_W;
-    int y = L_TOP;
     d_battery(g_cv, y, zmk_battery_state_of_charge());
-    d_text(g_cv, zmk_split_bt_peripheral_is_connected() ? "LINKED" : "NO LINK",
+    d_text(g_cv, zmk_split_bt_peripheral_is_connected() ? LINK_YES : LINK_NO,
            &lv_font_montserrat_14, y + 42);
     d_hline(g_cv, y + 60);
-    d_orbit(g_cv, y + 110, 24.0f);
+    d_orbit(g_cv, y + 110, ORBIT_R(24.0f));
 #endif
 
     rotate_canvas(g_cv);

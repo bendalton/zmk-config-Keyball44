@@ -3,12 +3,23 @@
  *
  * SPDX-License-Identifier: MIT
  */
- 
+
 #include "keyball44.dtsi"
+#include "keyball44_trackball_split.dtsi"
 
 &default_transform {
     col-offset = <6>;
 };
+
+/* No &nice_view_spi CS override here on purpose. ZMK's own
+ * nice_view_adapter/boards/nice_nano_v2.overlay already sets
+ * cs-gpios = <&pro_micro 1 GPIO_ACTIVE_HIGH> -- the identical value -- so the
+ * override this config used to carry was always a no-op. It also cannot live
+ * in a shield overlay: shield overlays are concatenated in SHIELD order, so
+ * `nice_view_spi` is not defined yet when this file is read (it comes from the
+ * adapter, listed after us). It used to work only because it sat in the
+ * keymap, which Zephyr applies last.
+ */
 
 &kscan0 {
 	col-gpios
@@ -54,15 +65,15 @@
         reg = <0>;
         spi-max-frequency = <2000000>;
         irq-gpios = <&gpio1 11 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
-	scroll-layers = <6>;
-	snipe-layers = <7>;
+        /* scroll-layers/snipe-layers REMOVED: the driver implements those by
+         * reading the active layer, which only exists on the central. This half
+         * is now a peripheral, so it just forwards raw motion; scroll/snipe are
+         * re-created on the dongle via layer-gated input-processors. */
     };
 };
 
-/ {
-  trackball_listener {
-    compatible = "zmk,input-listener";
+/* Forward this half's trackball to the dongle. The listener stays disabled here
+ * (defined in keyball44_trackball_split.dtsi); only the dongle enables it. */
+&split_input {
     device = <&trackball>;
-
-  };
 };
