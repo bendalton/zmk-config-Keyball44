@@ -381,5 +381,8 @@ combos:
   k: '|'
 - p: [28, 29]
   k: '?'
+- p: [5, 6]
+  k: '&dongle_boot'
+  l: [Ctrl]
 - p: [15, 16]
   k: $$mdi:keyboard-space$$
