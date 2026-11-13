@@ -11,6 +11,7 @@
  */
 
 #include <input/processors.dtsi>
+#include <dt-bindings/zmk/input_transform.h>
 #include "keyball44_common.dtsi"
 #include "keyball44_trackball_split.dtsi"
 
@@ -46,7 +47,13 @@
 
     scroller {
         layers = <6>;
-        input-processors = <&zip_xy_to_scroll_mapper>, <&zip_scroll_scaler 1 16>;
+        /* Y_INVERT: the old driver emitted wheel = -ball_y (INVERT_SCROLL_Y=n
+         * still flipped it); the mapper passes ball_y straight through, so
+         * vertical scroll came out reversed. Horizontal already matched the
+         * old INVERT_SCROLL_X=y behaviour, so it is left alone. */
+        input-processors = <&zip_xy_to_scroll_mapper>,
+                           <&zip_scroll_transform INPUT_TRANSFORM_Y_INVERT>,
+                           <&zip_scroll_scaler 1 16>;
     };
 
     sniper {
