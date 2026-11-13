@@ -1,0 +1,13 @@
+# Reset/bootloader that always runs on the central (see
+# src/behavior_central_bootloader.c). type: 0 = reset, RST_UF2 = bootloader.
+
+description: Reset the split central (dongle), optionally into the bootloader
+
+compatible: "zmk,behavior-central-reset"
+
+include: zero_param.yaml
+
+properties:
+  type:
+    type: int
+    default: 0

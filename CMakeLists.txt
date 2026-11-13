@@ -19,4 +19,6 @@ endif()
 # the `app` target so it gets ZMK's include paths.
 if((NOT CONFIG_ZMK_SPLIT) OR CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
   target_sources(app PRIVATE src/behavior_ram_macro.c)
+  # &dongle_boot: bootloader for the central itself (see the source).
+  target_sources(app PRIVATE src/behavior_central_bootloader.c)
 endif()

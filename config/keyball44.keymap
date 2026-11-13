@@ -109,6 +109,15 @@
         // space while the right thumb is busy holding NAV or the SYMBOL combo.
         // If it misfires on fast d->f rolls ("handful", "mindful"), add a
         // small require-prior-idle-ms (~40) to just this combo.
+        // Hold Z (CONTROL), then T+Y together = dongle into flash mode.
+        // Three keys across both hands on purpose: an accidental hit leaves
+        // the keyboard dead until you flash or unplug the dongle.
+        combo_dongle_boot {
+            timeout-ms = <50>;
+            key-positions = <5 6>;
+            layers = <CONTROL>;
+            bindings = <&dongle_boot>;
+        };
         combo_space {
             timeout-ms = <50>;
             key-positions = <15 16>;
@@ -163,6 +172,18 @@
             compatible = "zmk,behavior-ram-macro";
             #binding-cells = <1>;
             display-name = "Password Macro";
+        };
+
+        // Reboot the DONGLE into its UF2 bootloader (mounts as NICENANO), so
+        // re-flashing it needs no RST-GND short. Stock &bootloader can't do
+        // this: it reboots whichever half the key is on. See
+        // src/behavior_central_bootloader.c. Bound to the CONTROL-layer T+Y
+        // combo below.
+        dongle_boot: dngboot {
+            compatible = "zmk,behavior-central-reset";
+            type = <RST_UF2>;
+            #binding-cells = <0>;
+            display-name = "Dongle Bootloader";
         };
 
         gresc: grave_escape {
