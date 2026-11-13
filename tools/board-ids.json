@@ -1,0 +1,13 @@
+{
+  "dongle": {
+    "app_serial": "A2051D2F672B2163",
+    "boot_serial": "A2051D2F672B2163",
+    "location": "0x08320000"
+  },
+  "left": {
+    "boot_serial": "ED657A0EEC66E0AC"
+  },
+  "right": {
+    "boot_serial": "AE64F6AF5703B5ED"
+  }
+}
