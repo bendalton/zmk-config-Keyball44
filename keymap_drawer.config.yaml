@@ -261,6 +261,12 @@ parse_config:
       tap: $$mdi:backup-restore$$
     "&bootloader":
       tap: $$mdi:progress-download$$
+    "&half_boot 24":
+      tap: $$mdi:progress-download$$
+      hold: L
+    "&half_boot 35":
+      tap: $$mdi:progress-download$$
+      hold: R
 
   # ZMK
   zmk_keycode_map:

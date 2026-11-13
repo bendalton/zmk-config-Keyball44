@@ -1,0 +1,8 @@
+# Reboot the split half that owns key position <param1> into its UF2
+# bootloader, from a combo (see src/behavior_half_bootloader.c).
+
+description: Bootloader for the split half that owns a given key position
+
+compatible: "zmk,behavior-half-bootloader"
+
+include: one_param.yaml

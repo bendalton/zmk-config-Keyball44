@@ -106,7 +106,8 @@
         // space while the right thumb is busy holding NAV or the SYMBOL combo.
         // If it misfires on fast d->f rolls ("handful", "mindful"), add a
         // small require-prior-idle-ms (~40) to just this combo.
-        // Hold Z (CONTROL), then T+Y together = dongle into flash mode.
+        // Hold Z or the rightmost thumb (CONTROL), then T+Y together =
+        // dongle into flash mode.
         // Three keys across both hands on purpose: an accidental hit leaves
         // the keyboard dead until you flash or unplug the dongle.
         combo_dongle_boot {
@@ -114,6 +115,24 @@
             key-positions = <5 6>;
             layers = <CONTROL>;
             bindings = <&dongle_boot>;
+        };
+        // Hold Z or the rightmost thumb (CONTROL), then:
+        //   Esc + left Shift   (0+24)  = LEFT half into flash mode
+        //   F18 + right Shift  (11+35) = RIGHT half into flash mode
+        // Combos run on the dongle, so stock &bootloader would reboot the
+        // dongle; &half_boot forwards it to the half that owns the position.
+        // CONTROL-only, so Shift+Esc (~) on the base layer is untouched.
+        combo_left_boot {
+            timeout-ms = <50>;
+            key-positions = <0 24>;
+            layers = <CONTROL>;
+            bindings = <&half_boot 24>;
+        };
+        combo_right_boot {
+            timeout-ms = <50>;
+            key-positions = <11 35>;
+            layers = <CONTROL>;
+            bindings = <&half_boot 35>;
         };
         combo_space {
             timeout-ms = <50>;
@@ -183,6 +202,14 @@
             display-name = "Dongle Bootloader";
         };
 
+        // Reboot one HALF into its UF2 bootloader from a combo. Param = a key
+        // position on that half (src/behavior_half_bootloader.c).
+        half_boot: half_bootloader {
+            compatible = "zmk,behavior-half-bootloader";
+            #binding-cells = <1>;
+            display-name = "Half Bootloader";
+        };
+
         gresc: grave_escape {
             compatible = "zmk,behavior-mod-morph";
             label = "GRAVE_ESCAPE";
@@ -221,7 +248,8 @@
 // Left thumb keys (5 keys): first was dead -> now caps_word
 &none           &caps_word &hmt LSHFT DEL &hmt LGUI RET &mo NUMBERS
 // Right thumb keys (3 keys)
-&lt NAV SPACE    &bkspc_shft LSHFT BSPC &none
+// Rightmost thumb = hold for CONTROL (same as holding Z).
+&lt NAV SPACE    &bkspc_shft LSHFT BSPC &mo CONTROL
             >;
         };
 
@@ -335,10 +363,10 @@
             display-name = "Ctrl";
             bindings = <
 // Row 0 Left - 6 keys  (R = record password macro)
-&bootloader     &none      &tog WINDOWS      &none      &pwd PWD_REC &none
+// (Esc alone no longer flashes: it's the Esc+LShift combo now.)
+&none           &none      &tog WINDOWS      &none      &pwd PWD_REC &none
 // Row 0 Right - 6 keys
-// (far-right &bootloader removed -- too easy to hit next to P/;. The left
-// one at Z+Esc stays. Right half: double-short RST-GND to flash.)
+// (Half flashing = CONTROL combos Esc+LShift / F18+RShift, see combos.)
 &none           &none      &none      &none      &none      &none
 // Row 1 Left - 6 keys
 &none           &none      &none      &none      &none      &none
