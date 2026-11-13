@@ -44,7 +44,7 @@ layers:
   - Num
   - {t: '$$mdi:keyboard-space$$', h: Nav}
   - {t: '$$mdi:backspace$$', h: '$$mdi:apple-keyboard-shift$$'}
-  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - Ctrl
   Win:
   - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
@@ -226,7 +226,7 @@ layers:
   - {type: held}
   - {t: '$$mdi:transfer$$', type: trans}
   Ctrl:
-  - $$mdi:progress-download$$
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
   - {t: Win, h: toggle}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
@@ -269,7 +269,7 @@ layers:
   - {t: '$$mdi:minus-circle-outline$$', type: none}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
-  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: held alternate}
   Scroll:
   - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
@@ -381,6 +381,12 @@ combos:
   k: '|'
 - p: [5, 6]
   k: '&dongle_boot'
+  l: [Ctrl]
+- p: [0, 24]
+  k: {t: '$$mdi:progress-download$$', h: L}
+  l: [Ctrl]
+- p: [11, 35]
+  k: {t: '$$mdi:progress-download$$', h: R}
   l: [Ctrl]
 - p: [15, 16]
   k: $$mdi:keyboard-space$$
