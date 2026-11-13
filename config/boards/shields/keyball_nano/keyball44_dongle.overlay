@@ -45,6 +45,13 @@
 &trackball_listener {
     status = "okay";
 
+    /* Base pointer speed trim on top of the sensor CPI (1872/4 on the right
+     * half). 27/25 = 1.08x (2026-11-13, "bump 5-10%"). Done here rather than
+     * via CPI so only the dongle needs re-flashing. zip_xy_scaler tracks
+     * remainders, so slow moves don't lose precision. The scroller/sniper
+     * children below replace this on their layers, so they are unaffected. */
+    input-processors = <&zip_xy_scaler 27 25>;
+
     scroller {
         layers = <6>;
         /* Y_INVERT: the old driver emitted wheel = -ball_y (INVERT_SCROLL_Y=n
