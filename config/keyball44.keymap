@@ -40,7 +40,9 @@
     require-prior-idle-ms = <125>;
 };
 
-&caps_word { continue-list = <UNDERSCORE MINUS>; };
+// continue-list REPLACES ZMK's default (UNDERSCORE BACKSPACE DELETE), so the
+// defaults must be listed again or fixing a typo ends caps word.
+&caps_word { continue-list = <UNDERSCORE MINUS BACKSPACE DELETE>; };
 
 / {
     combos {
@@ -99,11 +101,6 @@
             timeout-ms = <50>;
             key-positions = <10 11>;
             bindings = <&kp PIPE>;
-        };
-        combo_question {
-            timeout-ms = <50>;
-            key-positions = <28 29>;
-            bindings = <&kp QUESTION>;
         };
         // Left-hand space (D+F), one column over from S+D=tab. Lets you hit
         // space while the right thumb is busy holding NAV or the SYMBOL combo.
@@ -278,9 +275,10 @@
 &kp LSHFT       &none      &kp LCTRL  &kp LALT   &kp LGUI   &kp C_MUTE
 // Row 2 Right - 6 keys
 &kp LG(LBRC)    &kp LA(LS(DOWN)) &kp LA(LS(UP)) &kp LG(RBRC) &none &none
-// Row 3 - Thumb row
-&none           &none      &none      &none      &none
-&none           &none      &none
+// Row 3 - Thumb row: pass through, so Enter/Del work while holding NAV and
+// holding the Del thumb (Shift) + HJKL selects.
+&trans          &trans     &trans     &trans     &trans
+&trans          &trans     &trans
             >;
         };
 
@@ -306,6 +304,10 @@
             >;
         };
 
+        // Home row = the shifted number row of a normal keyboard, ~ through _.
+        // Each symbol sits on the key its digit uses on NUMBERS (! on A = 1,
+        // ( on L = 9). Bracket family stacked on L/; : { } above, ( ) home,
+        // [ ] below. _ over - at the far right, like a real -/_ key.
         symbol {
             label = "SYMBOL";
             display-name = "Sym";
@@ -313,15 +315,15 @@
 // Row 0 Left - 6 keys
 &none           &none      &none      &none      &none      &none
 // Row 0 Right - 6 keys
-&kp GRAVE       &kp EQUAL  &kp LBRC   &kp RBRC   &kp PIPE   &kp BSLH
+&kp GRAVE       &kp EQUAL  &kp PLUS   &kp LBRC   &kp RBRC   &kp BSLH
 // Row 1 Left - 6 keys
-&none           &none      &none      &none      &none      &none
+&kp TILDE       &kp EXCL   &kp AT     &kp HASH   &kp DLLR   &kp PRCNT
 // Row 1 Right - 6 keys
-&kp LBKT        &kp RBKT   &kp LPAR   &kp RPAR   &kp MINUS  &none
+&kp CARET       &kp AMPS   &kp STAR   &kp LPAR   &kp RPAR   &kp UNDER
 // Row 2 Left - 6 keys
 &none           &none      &none      &none      &none      &none
 // Row 2 Right - 6 keys
-&none           &kp PLUS   &kp EQUAL  &kp LT     &kp GT     &kp FSLH
+&none           &kp PIPE   &none      &kp LBKT   &kp RBKT   &kp MINUS
 // Row 3 - Thumb row
 &trans          &trans     &trans     &trans     &trans
 &trans          &trans     &trans

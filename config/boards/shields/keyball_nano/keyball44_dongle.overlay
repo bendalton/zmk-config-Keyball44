@@ -34,9 +34,10 @@
  *
  * Layer 6 = SCROLL, layer 7 = SNIPE (see keyball44.keymap #defines). On those
  * layers the child nodes override the processing:
- *   - SCROLL: map ball X/Y onto the scroll wheel, then scale it DOWN (raw ball
- *     deltas are far too large for wheel ticks). zip_scroll_scaler <1 N>: bigger
- *     N == slower scroll. Start at /16 and tune to taste.
+ *   - SCROLL: map ball X/Y onto the scroll wheel. Smooth scrolling is on
+ *     (keyball44_dongle.conf): the host sets a 16x resolution multiplier, so
+ *     each unit is 1/16 of a notch -- scaler 1/1 here equals the old 1/16
+ *     whole-notch speed. zip_scroll_scaler <1 N>: bigger N == slower.
  *   - SNIPE:  scale pointer X/Y to ~1/4 speed (matches the old 480 vs 1872 CPI
  *     ratio). zip_xy_scaler <1 N>: bigger N == slower/more precise.
  * Orientation/inversion stays in the PMW3610 driver conf on the right half, so
@@ -60,7 +61,7 @@
          * old INVERT_SCROLL_X=y behaviour, so it is left alone. */
         input-processors = <&zip_xy_to_scroll_mapper>,
                            <&zip_scroll_transform INPUT_TRANSFORM_Y_INVERT>,
-                           <&zip_scroll_scaler 1 16>;
+                           <&zip_scroll_scaler 1 1>;
     };
 
     sniper {
